@@ -25,7 +25,6 @@ public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> 
 
     class ViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
-        ImageView Thumbnail;
         TextView ToonName;
         TextView ReleaseWeekday;
 
@@ -33,7 +32,9 @@ public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> 
             super(itemView);
 
             cardView = itemView.findViewById(R.id.card_rec_main);
-            Thumbnail = itemView.findViewById(R.id.img_toons_thumbnail);
+            cardView.setOnClickListener(v -> {
+                mData.get(getAdapterPosition());
+            });
             ToonName = itemView.findViewById(R.id.tv_toons_title);
             ReleaseWeekday = itemView.findViewById(R.id.tv_toons_release);
         }

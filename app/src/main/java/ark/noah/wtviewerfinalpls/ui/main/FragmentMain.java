@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import ark.noah.wtviewerfinalpls.MainActivity;
 import ark.noah.wtviewerfinalpls.ObjectSerializer;
 import ark.noah.wtviewerfinalpls.R;
 import ark.noah.wtviewerfinalpls.databinding.FragmentMainBinding;
@@ -90,5 +91,11 @@ public class FragmentMain extends Fragment {
         }
 
         binding = null;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivity) requireActivity()).resumedFromMainFragment();
     }
 }

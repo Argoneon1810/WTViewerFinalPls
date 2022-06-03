@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private boolean bVisible;
 
-    public BackPressEvent backPressEvent;
+    private BackPressEvent backPressEvent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +70,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onSupportNavigateUp() {
         if(backPressEvent!=null) {
-            backPressEvent.onBackPressedExtra();
+            if(!backPressEvent.onBackPressedExtra()) {
+                backPressEvent = null;
+                return false;
+            }
             backPressEvent = null;
         }
 
@@ -79,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 || super.onSupportNavigateUp();
     }
 
+    //region FAB onoff
     public void resetFABsToInitialState() {
         bVisible = false;
         showAllFABs();
@@ -112,7 +116,9 @@ public class MainActivity extends AppCompatActivity {
         binding.appBarMain.fabOptions.setVisibility(View.GONE);
         hideMiniFABs();
     }
+    //endregion
 
+    //region onclicks
     private void onClickFABWeb(View view) {
         hideAllFABs();
         //Log.i("", "this is web fab");
@@ -128,8 +134,16 @@ public class MainActivity extends AppCompatActivity {
         hideAllFABs();
         Log.i("", "this is link fab");
     }
+    //endregion
 
     public interface BackPressEvent {
-        void onBackPressedExtra();
+        boolean onBackPressedExtra();
     }
+
+    public void assignBackPressEvent(BackPressEvent backPressEvent) {
+        this.backPressEvent = backPressEvent;
+    }
+
+    public void resumedFromMainFragment() { resetFABsToInitialState(); }
+    public void resumedFromOtherFragment() { hideAllFABs();}
 }

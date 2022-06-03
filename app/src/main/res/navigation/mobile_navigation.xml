@@ -81,7 +81,7 @@
     </fragment>
     <fragment
         android:id="@+id/fragmentAddNew"
-        android:name="ark.noah.wtviewerfinalpls.FragmentAddNew"
+        android:name="ark.noah.wtviewerfinalpls.ui.addnew.FragmentAddNew"
         android:label="fragment_add_new"
         tools:layout="@layout/fragment_add_new" >
         <action

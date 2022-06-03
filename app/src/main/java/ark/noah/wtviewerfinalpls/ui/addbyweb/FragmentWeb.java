@@ -19,6 +19,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 import ark.noah.wtviewerfinalpls.EntryPointGetter;
 import ark.noah.wtviewerfinalpls.ExecutorRunner;
@@ -43,9 +44,10 @@ public class FragmentWeb extends Fragment implements EntryPointGetter.Callback, 
         binding = FragmentWebBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
-        ((MainActivity)requireActivity()).backPressEvent = this;
+        ((MainActivity)requireActivity()).assignBackPressEvent(this);
 
         binding.webView.setWebViewClient(new MyBrowser());
+        binding.webView.getSettings().setJavaScriptEnabled(true);
         try {
             EntryPointGetter.requestEntryPointLink(this);
         } catch (InterruptedException e) {
@@ -61,6 +63,12 @@ public class FragmentWeb extends Fragment implements EntryPointGetter.Callback, 
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivity)requireActivity()).resumedFromOtherFragment();
     }
 
     @Override
@@ -81,9 +89,14 @@ public class FragmentWeb extends Fragment implements EntryPointGetter.Callback, 
     }
 
     @Override
-    public void onBackPressedExtra() {
+    public boolean onBackPressedExtra() {
+        if(binding.webView.canGoBack()) {
+            binding.webView.goBack();
+            return false;
+        }
         binding.webView.stopLoading();
         ((MainActivity)requireActivity()).resetFABsToInitialState();
+        return true;
     }
 
     @Override
