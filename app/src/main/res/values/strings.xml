@@ -38,7 +38,8 @@
     <string name="content_desc_fab_list">It moves you to the page where you can add a list of toons by giving long text consisted with links divided by link breaks.</string>
     <string name="content_desc_fab_link">It moves you to the page where you can add a toon by giving a url of that specific toon web page.</string>
     <string name="content_desc_fab_confirm">By doing this, the things you reviewed above will be added to the main list.</string>
-    <string name="content_desc_thumbnail">Is a thumbnail of this toon.</string>
+    <string name="content_desc_thumbnail">It is a thumbnail of this toon.</string>
+    <string name="content_desc_toon_slide">It is a placeholder of the toon slide. It will be filled with the actual toon slides.</string>
 
     <string name="notif_invalid_link_in_list">Invalid url was in the list. Stopping iteration.</string>
 
