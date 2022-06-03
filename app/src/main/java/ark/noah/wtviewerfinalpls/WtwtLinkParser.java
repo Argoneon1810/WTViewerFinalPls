@@ -15,6 +15,8 @@ public class WtwtLinkParser {
         String toonType;
     }
 
+    static String postfix;
+
     public static boolean isLinkValid(String urlToParse) {
         return extractInfo(urlToParse) != null;
     }
@@ -74,13 +76,15 @@ public class WtwtLinkParser {
 
     public static String rebuildLinkEpisodes(ToonsContainer container) {
         String entryPoint = EntryPointGetter.getLastValidEntryPoint();
-        if(entryPoint.equals("")) return "";
+        if(entryPoint.equals("")) {
+            return "";
+        }
 
-        String temp = entryPoint + container.toonType;
-        temp = temp.substring(0, temp.length()-1);
-        temp = temp + "1";
-        temp = temp + "?toon=" + container.toonID;
+        String postfix = container.toonType;
+        postfix = postfix.substring(0, postfix.length()-1);
+        postfix = postfix + "1";
+        postfix = postfix + "?toon=" + container.toonID;
 
-        return temp;
+        return entryPoint + postfix;
     }
 }

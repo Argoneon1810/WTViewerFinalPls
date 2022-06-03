@@ -1,6 +1,8 @@
 package ark.noah.wtviewerfinalpls;
 
+import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
@@ -15,6 +17,12 @@ import java.util.ArrayList;
 public class EntryPointGetter {
     private static String lastValidEntryPoint;
 
+    private static ArrayList<String> entrypointArrayList = new ArrayList<>();
+
+    static Thread entryLinkGetterThread = new Thread(EntryPointGetter::run);
+
+    static Callback callback;
+
     private static void run() {
         String url = "https://nicelink6.com/";
         Document doc;
@@ -27,8 +35,12 @@ public class EntryPointGetter {
             for (Element value : element.select("a"))
                 entrypointArrayList.add(value.attr("href"));
 
-            Message msg = entryPointHandler.obtainMessage();
-            entryPointHandler.sendMessage(msg);
+            lastValidEntryPoint = entrypointArrayList.get(1);       //0 = wolf, 1 = wtwt, etc.
+
+            new Handler(Looper.getMainLooper()).post(() -> {
+                if(callback != null)
+                    callback.onEntryAquired(lastValidEntryPoint);
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -38,31 +50,26 @@ public class EntryPointGetter {
         void onEntryAquired(String url);
     }
 
-    private static ArrayList<String> entrypointArrayList = new ArrayList<>();
-
-    static Handler entryPointHandler;
-    static Thread entryLinkGetterThread = new Thread(EntryPointGetter::run);
-
-    public static void requestEntryPointLink(Callback callback) throws InterruptedException {
-        entryPointHandler = new Handler((m) -> {
-            lastValidEntryPoint = entrypointArrayList.get(1);
-            callback.onEntryAquired(lastValidEntryPoint);        //0 = wolf, 1 = wtwt, etc.
-            return false;
-        });
+    public static void requestEntryPointLink(Callback callback) {
+        EntryPointGetter.callback = callback;
         stopThreadIfAlive();
         entryLinkGetterThread.start();
     }
 
-    public static void stopThreadIfAlive() throws InterruptedException {
-        if(entryLinkGetterThread.isAlive()) {
-            entryLinkGetterThread.wait();
-            entryLinkGetterThread.interrupt();
-            entryLinkGetterThread = new Thread(EntryPointGetter::run);
-        } else if(entryLinkGetterThread.getState() == Thread.State.TERMINATED) {
-            entryLinkGetterThread = null;
-            entryLinkGetterThread = new Thread(EntryPointGetter::run);
-        } else {
-            Log.i("", "entry point getter thread status: " + entryLinkGetterThread.getState().toString());
+    public static void stopThreadIfAlive() {
+        try {
+            if(entryLinkGetterThread.isAlive()) {
+                entryLinkGetterThread.wait();
+                entryLinkGetterThread.interrupt();
+                entryLinkGetterThread = new Thread(EntryPointGetter::run);
+            } else if(entryLinkGetterThread.getState() == Thread.State.TERMINATED) {
+                entryLinkGetterThread = null;
+                entryLinkGetterThread = new Thread(EntryPointGetter::run);
+            } else {
+                Log.i("", "entry point getter thread status: " + entryLinkGetterThread.getState().toString());
+            }
+        } catch(InterruptedException e) {
+            e.printStackTrace();
         }
     }
 

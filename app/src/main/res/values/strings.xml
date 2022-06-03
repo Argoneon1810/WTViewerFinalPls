@@ -42,6 +42,7 @@
     <string name="content_desc_toon_slide">It is a placeholder of the toon slide. It will be filled with the actual toon slides.</string>
 
     <string name="notif_invalid_link_in_list">Invalid url was in the list. Stopping iteration.</string>
+    <string name="notif_link_not_ready">Main entry point is not yet prepared. Please wait shortly.</string>
 
     <string name="item_placeholder">New Item #%d</string>
 </resources>

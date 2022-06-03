@@ -1,11 +1,11 @@
 package ark.noah.wtviewerfinalpls.ui.main;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,12 +13,12 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import ark.noah.wtviewerfinalpls.DBHelper;
+import ark.noah.wtviewerfinalpls.EntryPointGetter;
 import ark.noah.wtviewerfinalpls.MainActivity;
-import ark.noah.wtviewerfinalpls.ObjectSerializer;
 import ark.noah.wtviewerfinalpls.R;
 import ark.noah.wtviewerfinalpls.databinding.FragmentMainBinding;
 
@@ -26,7 +26,7 @@ public class FragmentMain extends Fragment {
 
     private MainViewModel homeViewModel;
     private FragmentMainBinding binding;
-    SharedPreferences sharedPreferences;
+    private DBHelper dbHelper;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -36,33 +36,17 @@ public class FragmentMain extends Fragment {
         binding = FragmentMainBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
-        //retrieve data from sharedpref if any
-        ArrayList<ToonsContainer> mList = new ArrayList<>();
-        sharedPreferences =
-                Objects.requireNonNull(getActivity())
-                        .getSharedPreferences(
-                                Objects.requireNonNull(getContext()).getString(R.string.shared_pref_key),
-                                Context.MODE_PRIVATE
-                        );
-        if(sharedPreferences.contains(getContext().getString(R.string.shared_pref_toonslist_key))) {
-            try {
-                Object deserializedObject = ObjectSerializer.deserialize(
-                        sharedPreferences.getString(
-                                getContext().getString(R.string.shared_pref_toonslist_key),
-                                ObjectSerializer.serialize(new ArrayList<ToonsContainer>())
-                        ));
-                if(deserializedObject instanceof ArrayList<?>)
-                    for(Object elem : (ArrayList<?>)deserializedObject)
-                        if(elem instanceof ToonsContainer)
-                            mList.add((ToonsContainer) elem);
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
+        dbHelper = new DBHelper(getContext());
+
+        ArrayList<ToonsContainer> mList = dbHelper.getAllToons();
 
         ToonsAdapter adapter = new ToonsAdapter(mList);
 
         adapter.setOnItemClickListener((v, position) -> {
+            if(EntryPointGetter.getLastValidEntryPoint().equals("")) {
+                Toast.makeText(requireContext().getApplicationContext(), requireContext().getText(R.string.notif_link_not_ready), Toast.LENGTH_SHORT).show();
+                return;
+            }
             FragmentMainDirections.ActionNavMainToNavGallery action = FragmentMainDirections.actionNavMainToNavGallery(adapter.getItem(position));
             Navigation.findNavController(view).navigate(action);
         });
@@ -79,25 +63,18 @@ public class FragmentMain extends Fragment {
         if(containers == null) return;
         if(containers.length == 0) return;
 
-        ((ToonsAdapter) Objects.requireNonNull(binding.recMain.getAdapter())).AddItems(containers);
+        ToonsAdapter adapter = ((ToonsAdapter) Objects.requireNonNull(binding.recMain.getAdapter()));
+        int lastID = dbHelper.getToonIDAtLastPosition();
+        for(int i = 1; i <= containers.length; ++i) {
+            containers[i-1].dbID = lastID + i;
+            dbHelper.insertToonContent(containers[i-1]);
+            adapter.addItem(containers[i-1]);
+        }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-
-        //serialize and save to sharedpref the data
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        try {
-            editor.putString(
-                    requireContext().getString(R.string.shared_pref_toonslist_key),
-                    ObjectSerializer.serialize(((ToonsAdapter) Objects.requireNonNull(binding.recMain.getAdapter())).getmData())
-            );
-            editor.apply();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         binding = null;
     }
 

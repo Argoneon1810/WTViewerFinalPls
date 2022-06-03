@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.Objects;
 
 import ark.noah.wtviewerfinalpls.EntryPointGetter;
+import ark.noah.wtviewerfinalpls.ExecutorRunner;
 import ark.noah.wtviewerfinalpls.MainActivity;
 import ark.noah.wtviewerfinalpls.WtwtLinkParser;
 import ark.noah.wtviewerfinalpls.databinding.FragmentEpisodesBinding;
@@ -34,11 +35,13 @@ import ark.noah.wtviewerfinalpls.ui.main.FragmentMainArgs;
 import ark.noah.wtviewerfinalpls.ui.main.ToonsAdapter;
 import ark.noah.wtviewerfinalpls.ui.main.ToonsContainer;
 
-public class FragmentEpisodes extends Fragment {
+public class FragmentEpisodes extends Fragment implements MainActivity.BackPressEvent {
     private EpisodesViewModel galleryViewModel;
     private FragmentEpisodesBinding binding;
 
     private ToonsContainer currentToon;
+
+    private String baseLink;
 
     final String LINKS_ARRAY_KEY = "links";
     final String NUMBERS_ARRAY_KEY = "numbers";
@@ -71,6 +74,8 @@ public class FragmentEpisodes extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         currentToon = FragmentEpisodesArgs.fromBundle(getArguments()).getToon();
+        baseLink = WtwtLinkParser.rebuildLinkEpisodes(currentToon);
+        stopThreadIfAlive();
         episodesGetterThread.start();
     }
 
@@ -86,7 +91,26 @@ public class FragmentEpisodes extends Fragment {
         ((MainActivity)requireActivity()).resumedFromOtherFragment();
     }
 
+    public void stopThreadIfAlive() {
+        try {
+            if(episodesGetterThread.isAlive()) {
+                episodesGetterThread.wait();
+                episodesGetterThread.interrupt();
+                episodesGetterThread = new Thread(this::run);
+            } else if(episodesGetterThread.getState() == Thread.State.TERMINATED) {
+                episodesGetterThread = null;
+                episodesGetterThread = new Thread(this::run);
+            } else {
+                Log.i("", "entry point getter thread status: " + episodesGetterThread.getState().toString());
+            }
+        } catch(InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     Handler handler = new Handler((m) -> {
+        if(binding == null) return false;
+
         Bundle bundle = m.getData();
 
         ArrayList<EpisodesContainer> containers = new ArrayList<>();
@@ -113,14 +137,14 @@ public class FragmentEpisodes extends Fragment {
         return false;
     });
 
-    Thread episodesGetterThread = new Thread(() -> {
-        String url = WtwtLinkParser.rebuildLinkEpisodes(currentToon);
+    Thread episodesGetterThread = new Thread(this::run);
+    private void run() {
         Document doc;
 
         Bundle bundle = new Bundle();
 
         try {
-            doc = Jsoup.connect(url).get();
+            doc = Jsoup.connect(baseLink).get();
 
             Elements element = doc.select("div.left-box").select("ul.list");
 
@@ -153,5 +177,11 @@ public class FragmentEpisodes extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    });
+    }
+
+    @Override
+    public boolean onBackPressedExtra() {
+        stopThreadIfAlive();
+        return true;
+    }
 }

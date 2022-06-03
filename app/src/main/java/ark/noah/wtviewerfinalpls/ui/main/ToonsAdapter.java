@@ -88,12 +88,23 @@ public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> 
         return mData.get(position);
     }
 
+    public boolean isNullOrEmpty() {
+        if(mData == null) return true;
+        return mData.isEmpty();
+    }
+
     public ArrayList<ToonsContainer> getmData() {
         return mData;
     }
 
-    public void AddItems(ToonsContainer[] containers) {
+    public void addItem(ToonsContainer container) {
+        mData.add(container);
+        notifyItemInserted(mData.size()-1);
+    }
+    public void addItems(ToonsContainer[] containers) {
+        int startIndex = mData.size();
         mData.addAll(Arrays.asList(containers.clone()));
+        notifyItemRangeInserted(startIndex, mData.size()-1);
     }
 
     public interface OnItemClickListener {

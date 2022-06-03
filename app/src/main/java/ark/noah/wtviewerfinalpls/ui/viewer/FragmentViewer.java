@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import ark.noah.wtviewerfinalpls.databinding.FragmentViewerBinding;
-import ark.noah.wtviewerfinalpls.ui.episodes.FragmentEpisodesArgs;
 
 public class FragmentViewer extends Fragment {
 
@@ -46,7 +45,6 @@ public class FragmentViewer extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         currentUrl = FragmentViewerArgs.fromBundle(getArguments()).getUrl();
-        Log.i("", currentUrl);
         networkThread.start();
     }
 
@@ -57,6 +55,8 @@ public class FragmentViewer extends Fragment {
     }
 
     Handler handler = new Handler((m) -> {
+        if(binding == null) return false;
+
         Bundle bundle = m.getData();
 
         ArrayList<ViewerContainer> containers = new ArrayList<>();

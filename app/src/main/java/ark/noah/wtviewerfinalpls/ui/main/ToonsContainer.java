@@ -15,10 +15,25 @@ public class ToonsContainer implements Parcelable {
     private static final int FRIDAY_FLAG    = 0b0000010;
     private static final int SATURDAY_FLAG  = 0b0000001;
 
+    public int dbID;
     public String toonName, toonType;
     public int toonID, episodeID, releaseWeekdays;
 
-    public ToonsContainer() {}
+    public ToonsContainer(
+        int dbID,
+        String  toonName,
+        String  toonType,
+        int     toonID,
+        int     episodeID,
+        int     releaseWeekdays
+    ) {
+        this.dbID = dbID;
+        this.toonName = toonName;
+        this.toonType = toonType;
+        this.toonID = toonID;
+        this.episodeID = episodeID;
+        this.releaseWeekdays = releaseWeekdays;
+    }
 
     protected ToonsContainer(Parcel in) {
         toonName = in.readString();

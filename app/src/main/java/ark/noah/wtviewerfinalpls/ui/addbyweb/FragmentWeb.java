@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,10 +49,9 @@ public class FragmentWeb extends Fragment implements EntryPointGetter.Callback, 
 
         binding.webView.setWebViewClient(new MyBrowser());
         binding.webView.getSettings().setJavaScriptEnabled(true);
-        try {
+        String baseLink = EntryPointGetter.getLastValidEntryPoint();
+        if(baseLink.equals("")) {
             EntryPointGetter.requestEntryPointLink(this);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
 
         binding.btnAddthispage.setOnClickListener(v -> Navigation.findNavController(view).navigate(FragmentWebDirections.actionWebFragmentToFragmentAddNew(new String[] { currentLink })));
@@ -74,6 +74,7 @@ public class FragmentWeb extends Fragment implements EntryPointGetter.Callback, 
     @Override
     public void onEntryAquired(String url) {
         baseLink = url;
+        Log.i("", "this is in web fragment" + url);
         new ExecutorRunner().execute(
                 () -> {
                     Document document = null;
