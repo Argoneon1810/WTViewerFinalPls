@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
 
+import ark.noah.wtviewerfinalpls.EntryPointGetter;
 import ark.noah.wtviewerfinalpls.MainActivity;
 import ark.noah.wtviewerfinalpls.WtwtLinkParser;
 import ark.noah.wtviewerfinalpls.databinding.FragmentEpisodesBinding;
@@ -60,7 +61,7 @@ public class FragmentEpisodes extends Fragment {
 
         adapter.setOnItemClickListener((v, position) -> {
             FragmentEpisodesDirections.ActionNavGalleryToNavSlideshow action =
-                    FragmentEpisodesDirections.actionNavGalleryToNavSlideshow(adapter.getItem(position).link);
+                    FragmentEpisodesDirections.actionNavGalleryToNavSlideshow(EntryPointGetter.getLastValidEntryPoint() + adapter.getItem(position).link);
             Navigation.findNavController(view).navigate(action);
         });
 

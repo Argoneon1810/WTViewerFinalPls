@@ -4,4 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.viewer.FragmentViewer"/>
+    tools:context=".ui.viewer.FragmentViewer">
+
+    <ListView
+        android:id="@+id/listViewer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:dividerHeight="-1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
