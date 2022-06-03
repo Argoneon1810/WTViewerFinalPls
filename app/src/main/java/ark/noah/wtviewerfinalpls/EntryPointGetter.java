@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class EntryPointGetter {
+    private static String lastValidEntryPoint;
+
     private static void run() {
         String url = "https://nicelink6.com/";
         Document doc;
@@ -43,7 +45,8 @@ public class EntryPointGetter {
 
     public static void requestEntryPointLink(Callback callback) throws InterruptedException {
         entryPointHandler = new Handler((m) -> {
-            callback.onEntryAquired(entrypointArrayList.get(1));        //0 = wolf, 1 = wtwt, etc.
+            lastValidEntryPoint = entrypointArrayList.get(1);
+            callback.onEntryAquired(lastValidEntryPoint);        //0 = wolf, 1 = wtwt, etc.
             return false;
         });
         stopThreadIfAlive();
@@ -59,7 +62,12 @@ public class EntryPointGetter {
             entryLinkGetterThread = null;
             entryLinkGetterThread = new Thread(EntryPointGetter::run);
         } else {
-            Log.i("", entryLinkGetterThread.getState().toString());
+            Log.i("", "entry point getter thread status: " + entryLinkGetterThread.getState().toString());
         }
+    }
+
+    public static String getLastValidEntryPoint() {
+        if(!(lastValidEntryPoint == null)) return lastValidEntryPoint;
+        return "";
     }
 }

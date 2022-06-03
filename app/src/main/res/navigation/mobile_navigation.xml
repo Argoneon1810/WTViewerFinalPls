@@ -40,13 +40,20 @@
         <action
             android:id="@+id/action_nav_gallery_to_nav_slideshow"
             app:destination="@id/nav_viewer" />
+        <argument
+            android:name="Toon"
+            app:argType="ark.noah.wtviewerfinalpls.ui.main.ToonsContainer" />
     </fragment>
 
     <fragment
         android:id="@+id/nav_viewer"
         android:name="ark.noah.wtviewerfinalpls.ui.viewer.FragmentViewer"
         android:label="@string/menu_viewer"
-        tools:layout="@layout/fragment_viewer" />
+        tools:layout="@layout/fragment_viewer" >
+        <argument
+            android:name="url"
+            app:argType="string" />
+    </fragment>
     <fragment
         android:id="@+id/helpFragment"
         android:name="ark.noah.wtviewerfinalpls.ui.help.FragmentHelp"

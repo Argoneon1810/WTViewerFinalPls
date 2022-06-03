@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         binding.appBarMain.btnFablabelList.setVisibility(View.GONE);
         binding.appBarMain.btnFablabelWeb .setVisibility(View.GONE);
     }
-    private void hideAllFABs() {
+    public void hideAllFABs() {
         binding.appBarMain.fabOptions.setVisibility(View.GONE);
         hideMiniFABs();
     }

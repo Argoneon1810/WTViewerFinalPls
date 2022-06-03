@@ -23,6 +23,8 @@ import ark.noah.wtviewerfinalpls.R;
 public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> {
     private ArrayList<ToonsContainer> mData;
 
+    private OnItemClickListener mOnItemClickListener;
+
     class ViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
         TextView ToonName;
@@ -32,9 +34,7 @@ public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> 
             super(itemView);
 
             cardView = itemView.findViewById(R.id.card_rec_main);
-            cardView.setOnClickListener(v -> {
-                mData.get(getAdapterPosition());
-            });
+            cardView.setOnClickListener(v -> mOnItemClickListener.onClick(v, getAdapterPosition()));
             ToonName = itemView.findViewById(R.id.tv_toons_title);
             ReleaseWeekday = itemView.findViewById(R.id.tv_toons_release);
         }
@@ -84,11 +84,23 @@ public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> 
         return mData.size();
     }
 
+    public ToonsContainer getItem(int position) {
+        return mData.get(position);
+    }
+
     public ArrayList<ToonsContainer> getmData() {
         return mData;
     }
 
     public void AddItems(ToonsContainer[] containers) {
         mData.addAll(Arrays.asList(containers.clone()));
+    }
+
+    public interface OnItemClickListener {
+        void onClick(View v, int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        mOnItemClickListener = onItemClickListener;
     }
 }

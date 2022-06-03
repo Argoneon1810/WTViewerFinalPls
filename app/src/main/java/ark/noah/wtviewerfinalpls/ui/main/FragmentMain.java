@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class FragmentMain extends Fragment {
                 new ViewModelProvider(this).get(MainViewModel.class);
 
         binding = FragmentMainBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
+        View view = binding.getRoot();
 
         //retrieve data from sharedpref if any
         ArrayList<ToonsContainer> mList = new ArrayList<>();
@@ -59,9 +60,16 @@ public class FragmentMain extends Fragment {
             }
         }
 
-        binding.recMain.setAdapter(new ToonsAdapter(mList));
+        ToonsAdapter adapter = new ToonsAdapter(mList);
 
-        return root;
+        adapter.setOnItemClickListener((v, position) -> {
+            FragmentMainDirections.ActionNavMainToNavGallery action = FragmentMainDirections.actionNavMainToNavGallery(adapter.getItem(position));
+            Navigation.findNavController(view).navigate(action);
+        });
+
+        binding.recMain.setAdapter(adapter);
+
+        return view;
     }
 
     @Override

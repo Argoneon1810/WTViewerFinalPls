@@ -6,6 +6,8 @@ import android.widget.Toast;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import ark.noah.wtviewerfinalpls.ui.main.ToonsContainer;
+
 public class WtwtLinkParser {
     static class Info {
         int toonID;
@@ -68,5 +70,17 @@ public class WtwtLinkParser {
             toonTypes[i] = info.toonType;
         }
         return true;
+    }
+
+    public static String rebuildLinkEpisodes(ToonsContainer container) {
+        String entryPoint = EntryPointGetter.getLastValidEntryPoint();
+        if(entryPoint.equals("")) return "";
+
+        String temp = entryPoint + container.toonType;
+        temp = temp.substring(0, temp.length()-1);
+        temp = temp + "1";
+        temp = temp + "?toon=" + container.toonID;
+
+        return temp;
     }
 }
