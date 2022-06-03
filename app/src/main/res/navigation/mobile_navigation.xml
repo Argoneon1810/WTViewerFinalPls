@@ -3,23 +3,93 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@+id/nav_main">
 
     <fragment
-        android:id="@+id/nav_home"
-        android:name="ark.noah.wtviewerfinalpls.ui.home.HomeFragment"
-        android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
+        android:id="@+id/nav_main"
+        android:name="ark.noah.wtviewerfinalpls.ui.main.FragmentMain"
+        android:label="@string/menu_main"
+        tools:layout="@layout/fragment_main" >
+        <action
+            android:id="@+id/action_nav_main_to_nav_gallery"
+            app:destination="@id/nav_episode" />
+        <action
+            android:id="@+id/action_nav_main_to_helpFragment"
+            app:destination="@id/helpFragment" />
+        <action
+            android:id="@+id/action_nav_main_to_webFragment"
+            app:destination="@id/webFragment" />
+        <action
+            android:id="@+id/action_nav_main_to_linkFragment"
+            app:destination="@id/linkFragment" />
+        <action
+            android:id="@+id/action_nav_main_to_listFragment"
+            app:destination="@id/listFragment" />
+        <argument
+            android:name="Toon"
+            app:argType="ark.noah.wtviewerfinalpls.ui.main.ToonsContainer[]"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="ark.noah.wtviewerfinalpls.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_episode"
+        android:name="ark.noah.wtviewerfinalpls.ui.episodes.FragmentEpisodes"
+        android:label="@string/menu_episodes"
+        tools:layout="@layout/fragment_episodes">
+        <action
+            android:id="@+id/action_nav_gallery_to_nav_slideshow"
+            app:destination="@id/nav_viewer" />
+    </fragment>
 
     <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="ark.noah.wtviewerfinalpls.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:id="@+id/nav_viewer"
+        android:name="ark.noah.wtviewerfinalpls.ui.viewer.FragmentViewer"
+        android:label="@string/menu_viewer"
+        tools:layout="@layout/fragment_viewer" />
+    <fragment
+        android:id="@+id/helpFragment"
+        android:name="ark.noah.wtviewerfinalpls.ui.help.FragmentHelp"
+        android:label="fragment_help"
+        tools:layout="@layout/fragment_help" />
+    <fragment
+        android:id="@+id/webFragment"
+        android:name="ark.noah.wtviewerfinalpls.ui.addbyweb.FragmentWeb"
+        android:label="fragment_web"
+        tools:layout="@layout/fragment_web" >
+        <action
+            android:id="@+id/action_webFragment_to_fragmentAddNew"
+            app:destination="@id/fragmentAddNew" />
+    </fragment>
+    <fragment
+        android:id="@+id/linkFragment"
+        android:name="ark.noah.wtviewerfinalpls.ui.addbylink.FragmentLink"
+        android:label="fragment_link"
+        tools:layout="@layout/fragment_link" >
+        <action
+            android:id="@+id/action_linkFragment_to_fragmentAddNew"
+            app:destination="@id/fragmentAddNew" />
+    </fragment>
+    <fragment
+        android:id="@+id/listFragment"
+        android:name="ark.noah.wtviewerfinalpls.ui.addbylist.FragmentList"
+        android:label="fragment_list"
+        tools:layout="@layout/fragment_list" >
+        <action
+            android:id="@+id/action_listFragment_to_fragmentAddNew"
+            app:destination="@id/fragmentAddNew" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragmentAddNew"
+        android:name="ark.noah.wtviewerfinalpls.FragmentAddNew"
+        android:label="fragment_add_new"
+        tools:layout="@layout/fragment_add_new" >
+        <action
+            android:id="@+id/action_fragmentAddNew_to_nav_main"
+            app:destination="@id/nav_main" />
+        <argument
+            android:name="urls"
+            app:argType="string[]"
+            app:nullable="true" />
+    </fragment>
 </navigation>

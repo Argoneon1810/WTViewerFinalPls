@@ -5,4 +5,10 @@
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
     <dimen name="nav_header_height">176dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+
+    <dimen name="fab_mini_label_margin_end">72dp</dimen>
+    <dimen name="fab_mini_margin_end">24dp</dimen>
+    <dimen name="fab_mini_margin_bottom_1">80dp</dimen>
+    <dimen name="fab_mini_margin_bottom_2">128dp</dimen> <!-- add 40dp which is mini_fab's size, and then add 8dp which is desired margin in between -->
+    <dimen name="fab_mini_margin_bottom_3">176dp</dimen>
 </resources>
