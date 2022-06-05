@@ -23,8 +23,6 @@ import ark.noah.wtviewerfinalpls.R;
 public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> {
     private ArrayList<ToonsContainer> mData;
 
-    private OnItemClickListener mOnItemClickListener;
-
     class ViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
         TextView ToonName;
@@ -34,7 +32,6 @@ public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> 
             super(itemView);
 
             cardView = itemView.findViewById(R.id.card_rec_main);
-            cardView.setOnClickListener(v -> mOnItemClickListener.onClick(v, getAdapterPosition()));
             ToonName = itemView.findViewById(R.id.tv_toons_title);
             ReleaseWeekday = itemView.findViewById(R.id.tv_toons_release);
         }
@@ -84,8 +81,27 @@ public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> 
         return mData.size();
     }
 
-    public ToonsContainer getItem(int position) {
+    public ToonsContainer getItemAtPosition(int position) {
         return mData.get(position);
+    }
+
+    public int deleteItemAndGetIDOFDeleted(ToonsContainer target) {
+        int id = target.dbID;
+        int posToUpdate = mData.indexOf(target);
+        mData.remove(target);
+        notifyItemRemoved(posToUpdate);
+        return id;
+    }
+
+    public void updateItem(ToonsContainer updated) {
+        for (int i = 0; i < mData.size(); ++i) {
+            if(updated.dbID == mData.get(i).dbID) {
+                mData.remove(i);
+                mData.add(i, updated);
+                notifyItemChanged(i);
+                break;
+            }
+        }
     }
 
     public boolean isNullOrEmpty() {
@@ -105,13 +121,5 @@ public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> 
         int startIndex = mData.size();
         mData.addAll(Arrays.asList(containers.clone()));
         notifyItemRangeInserted(startIndex, mData.size()-1);
-    }
-
-    public interface OnItemClickListener {
-        void onClick(View v, int position);
-    }
-
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-        mOnItemClickListener = onItemClickListener;
     }
 }

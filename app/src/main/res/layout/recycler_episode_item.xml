@@ -8,9 +8,11 @@
     app:circularflow_defaultRadius="8dp">
 
   <androidx.cardview.widget.CardView
+      android:id="@+id/card_rec_episode"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:layout_margin="8dp"
+      app:cardBackgroundColor="@color/cardview_light_background"
       app:cardCornerRadius="8dp"
       app:cardElevation="2dp"
       app:cardMaxElevation="2dp">
@@ -24,10 +26,11 @@
           android:layout_width="32dp"
           android:layout_height="wrap_content"
           android:layout_margin="8dp"
+          android:maxLines="1"
+          android:text="@tools:sample/lorem"
           app:layout_constraintBottom_toBottomOf="parent"
           app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintTop_toTopOf="parent"
-          tools:text="@tools:sample/lorem" />
+          app:layout_constraintTop_toTopOf="parent" />
 
       <TextView
           android:id="@+id/tv_episodeTitle"

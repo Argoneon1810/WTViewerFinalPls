@@ -57,47 +57,47 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
             Sun = itemView.findViewById(R.id.btn_addnew_sun);
             Sun.setOnClickListener(v -> {
                 if(Sun.getForeground() == null) {
-                    currentBoundContainer.enableFlagSunday();
+                    currentBoundContainer.enableFlagSun();
                     v.setForeground(foregroundColor);
                 } else {
-                    currentBoundContainer.disableFlagSunday();
+                    currentBoundContainer.disableFlagSun();
                     v.setForeground(null);
                 }
             });
             Mon = itemView.findViewById(R.id.btn_addnew_mon);
             Mon.setOnClickListener(v -> {
                 if(Mon.getForeground() == null) {
-                    currentBoundContainer.enableFlagMonday();
+                    currentBoundContainer.enableFlagMon();
                     v.setForeground(foregroundColor);
                 } else {
-                    currentBoundContainer.disableFlagMonday();
+                    currentBoundContainer.disableFlagMon();
                     v.setForeground(null);
                 }
             });
             Tue = itemView.findViewById(R.id.btn_addnew_tue);
             Tue.setOnClickListener(v -> {
                 if(Tue.getForeground() == null) {
-                    currentBoundContainer.enableFlagTuesday();
+                    currentBoundContainer.enableFlagTue();
                     v.setForeground(foregroundColor);
                 } else {
-                    currentBoundContainer.disableFlagTuesday();
+                    currentBoundContainer.disableFlagTue();
                     v.setForeground(null);
                 }
             });
             Wed = itemView.findViewById(R.id.btn_addnew_wed);
             Wed.setOnClickListener(v -> {
                 if(Wed.getForeground() == null) {
-                    currentBoundContainer.enableFlagWednesday();
+                    currentBoundContainer.enableFlagWed();
                     v.setForeground(foregroundColor);
                 } else {
-                    currentBoundContainer.disableFlagWednesday();
+                    currentBoundContainer.disableFlagWed();
                     v.setForeground(null);
                 }
             });
             Thu = itemView.findViewById(R.id.btn_addnew_thu);
             Thu.setOnClickListener(v -> {
                 if(Thu.getForeground() == null) {
-                    currentBoundContainer.enableFlagThursday();
+                    currentBoundContainer.enableFlagThu();
                     v.setForeground(foregroundColor);
                 } else {
                     currentBoundContainer.disableFlagThursday();
@@ -107,7 +107,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
             Fri = itemView.findViewById(R.id.btn_addnew_fri);
             Fri.setOnClickListener(v -> {
                 if(Fri.getForeground() == null) {
-                    currentBoundContainer.enableFlagFriday();
+                    currentBoundContainer.enableFlagFri();
                     v.setForeground(foregroundColor);
                 } else {
                     currentBoundContainer.disableFlagFriday();
@@ -117,7 +117,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
             Sat = itemView.findViewById(R.id.btn_addnew_sat);
             Sat.setOnClickListener(v -> {
                 if(Sat.getForeground() == null) {
-                    currentBoundContainer.enableFlagSaturday();
+                    currentBoundContainer.enableFlagSat();
                     v.setForeground(foregroundColor);
                 } else {
                     currentBoundContainer.disableFlagSaturday();
@@ -150,13 +150,13 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
         holder.EpisodeID.setText(String.valueOf(holder.currentBoundContainer.episodeID));
         holder.ToonType.setText(holder.currentBoundContainer.toonType);
 
-        if(holder.currentBoundContainer.releasesOnSunday())    holder.Sun.setForeground(foregroundColor); else holder.Sun.setForeground(null);
-        if(holder.currentBoundContainer.releasesOnMonday())    holder.Mon.setForeground(foregroundColor); else holder.Mon.setForeground(null);
-        if(holder.currentBoundContainer.releasesOnTuesday())   holder.Tue.setForeground(foregroundColor); else holder.Tue.setForeground(null);
-        if(holder.currentBoundContainer.releasesOnWednesday()) holder.Wed.setForeground(foregroundColor); else holder.Wed.setForeground(null);
-        if(holder.currentBoundContainer.releasesOnThursday())  holder.Thu.setForeground(foregroundColor); else holder.Thu.setForeground(null);
-        if(holder.currentBoundContainer.releasesOnFriday())    holder.Fri.setForeground(foregroundColor); else holder.Fri.setForeground(null);
-        if(holder.currentBoundContainer.releasesOnSaturday())  holder.Sat.setForeground(foregroundColor); else holder.Sat.setForeground(null);
+        if(holder.currentBoundContainer.releasesOnSun()) holder.Sun.setForeground(foregroundColor); else holder.Sun.setForeground(null);
+        if(holder.currentBoundContainer.releasesOnMon()) holder.Mon.setForeground(foregroundColor); else holder.Mon.setForeground(null);
+        if(holder.currentBoundContainer.releasesOnTue()) holder.Tue.setForeground(foregroundColor); else holder.Tue.setForeground(null);
+        if(holder.currentBoundContainer.releasesOnWed()) holder.Wed.setForeground(foregroundColor); else holder.Wed.setForeground(null);
+        if(holder.currentBoundContainer.releasesOnThu()) holder.Thu.setForeground(foregroundColor); else holder.Thu.setForeground(null);
+        if(holder.currentBoundContainer.releasesOnFri()) holder.Fri.setForeground(foregroundColor); else holder.Fri.setForeground(null);
+        if(holder.currentBoundContainer.releasesOnSat()) holder.Sat.setForeground(foregroundColor); else holder.Sat.setForeground(null);
     }
 
     @Override

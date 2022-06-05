@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
 
+import ark.noah.wtviewerfinalpls.DBHelper;
 import ark.noah.wtviewerfinalpls.EntryPointGetter;
 import ark.noah.wtviewerfinalpls.ExecutorRunner;
 import ark.noah.wtviewerfinalpls.MainActivity;
@@ -35,9 +36,10 @@ import ark.noah.wtviewerfinalpls.ui.main.FragmentMainArgs;
 import ark.noah.wtviewerfinalpls.ui.main.ToonsAdapter;
 import ark.noah.wtviewerfinalpls.ui.main.ToonsContainer;
 
-public class FragmentEpisodes extends Fragment implements MainActivity.BackPressEvent {
+public class FragmentEpisodes extends Fragment implements MainActivity.BackPressEvent, EpisodesAdapter.IDDifferenceCallback {
     private EpisodesViewModel galleryViewModel;
     private FragmentEpisodesBinding binding;
+    private DBHelper dbHelper;
 
     private ToonsContainer currentToon;
 
@@ -56,6 +58,8 @@ public class FragmentEpisodes extends Fragment implements MainActivity.BackPress
         binding = FragmentEpisodesBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
+        dbHelper = new DBHelper(requireContext());
+
         ((MainActivity)requireActivity()).hideAllFABs();
 
         ArrayList<EpisodesContainer> mList = new ArrayList<>();
@@ -63,10 +67,12 @@ public class FragmentEpisodes extends Fragment implements MainActivity.BackPress
         binding.recEpisodes.setAdapter(adapter);
 
         adapter.setOnItemClickListener((v, position) -> {
-            FragmentEpisodesDirections.ActionNavGalleryToNavSlideshow action =
-                    FragmentEpisodesDirections.actionNavGalleryToNavSlideshow(EntryPointGetter.getLastValidEntryPoint() + adapter.getItem(position).link);
+            FragmentEpisodesDirections.ActionNavGalleryToFragmentViewer action =
+                    FragmentEpisodesDirections.actionNavGalleryToFragmentViewer(EntryPointGetter.getLastValidEntryPoint() + adapter.getItem(position).link);
             Navigation.findNavController(view).navigate(action);
         });
+
+        adapter.callback = this;
 
         return view;
     }
@@ -75,6 +81,7 @@ public class FragmentEpisodes extends Fragment implements MainActivity.BackPress
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         currentToon = FragmentEpisodesArgs.fromBundle(getArguments()).getToon();
         baseLink = WtwtLinkParser.rebuildLinkEpisodes(currentToon);
+        ((EpisodesAdapter) Objects.requireNonNull(binding.recEpisodes.getAdapter())).setCurrentToon(currentToon);
         stopThreadIfAlive();
         episodesGetterThread.start();
     }
@@ -129,11 +136,9 @@ public class FragmentEpisodes extends Fragment implements MainActivity.BackPress
             container.date = LocalDate.parse(dates.get(i), formatter);
             containers.add(container);
         }
-        Log.i("", "populated containers in handler length: " + containers.size());
 
         EpisodesAdapter adapter = (EpisodesAdapter) Objects.requireNonNull(binding.recEpisodes.getAdapter());
         adapter.updateAllData(containers);
-        Log.i("", "populated containers in handler length: " + adapter.mData.size());
         return false;
     });
 
@@ -183,5 +188,11 @@ public class FragmentEpisodes extends Fragment implements MainActivity.BackPress
     public boolean onBackPressedExtra() {
         stopThreadIfAlive();
         return true;
+    }
+
+    @Override
+    public void onIDDifferent(int id) {
+        currentToon.episodeID = id;
+        dbHelper.editToonContent(currentToon);
     }
 }

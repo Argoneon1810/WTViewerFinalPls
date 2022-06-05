@@ -22,40 +22,49 @@ public class WtwtLinkParser {
     }
 
     private static Info extractInfo(String url) {
-        String toon = "";
-        String num = "";
-
         try {
-            URL aURL = new URL(url);
-            int queryDividerIndex;
-
-            String queries = aURL.getQuery();
-            if (queries != null && queries.length() > 0) {
-                queryDividerIndex = queries.indexOf("&");
-                if (queryDividerIndex != -1) {
-                    toon = queries.substring(0, queryDividerIndex);
-                    num = queries.substring(queryDividerIndex + 1);
-
-                    int queryValueAssignIndex = toon.indexOf("=");
-                    if (queryValueAssignIndex != -1) {
-                        toon = toon.substring(queryValueAssignIndex + 1);
-                    }
-
-                    queryValueAssignIndex = num.indexOf("=");
-                    if (queryValueAssignIndex != -1) {
-                        num = num.substring(queryValueAssignIndex + 1);
-                    }
-                }
-            }
-
+            URL aUrl = new URL(url);
             Info info = new Info();
-            info.toonID = Integer.parseInt(toon);
-            info.episodeID = Integer.parseInt(num);
-            info.toonType = aURL.getPath();
+            info.toonID = extractToonId(aUrl);
+            info.episodeID = extractEpisodeID(aUrl);
+            info.toonType = aUrl.getPath();
             return info;
         } catch (MalformedURLException | NumberFormatException e) {
+            e.printStackTrace();
             return null;
         }
+    }
+
+    public static int extractEpisodeID(String url) {
+        try {
+            return extractEpisodeID(new URL(url));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+    private static int extractEpisodeID(URL aURL) {
+        String queries = aURL.getQuery();
+        if (queries != null && queries.length() > 0) {
+            int queryDividerIndex = queries.indexOf("&");
+            if (queryDividerIndex != -1) {
+                String latterQuery = queries.substring(queryDividerIndex + 1);      //this is for episode number
+                return Integer.parseInt(latterQuery.substring(latterQuery.indexOf("=") + 1));
+            }
+        }
+        return -1;
+    }
+
+    private static int extractToonId(URL aURL)  {
+        String queries = aURL.getQuery();
+        if (queries != null && queries.length() > 0) {
+            int queryDividerIndex = queries.indexOf("&");
+            if (queryDividerIndex != -1) {
+                String priorQuery = queries.substring(0, queryDividerIndex);        //this is for toon number
+                return Integer.parseInt(priorQuery.substring(priorQuery.indexOf("=") + 1));
+            }
+        }
+        return -1;
     }
 
     public static boolean tryPopulateInfo(Context applicationContext, String[] urls, int[] toonIDs, int[] episodeIds, String[] toonTypes) {

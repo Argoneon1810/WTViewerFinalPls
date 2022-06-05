@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">WTViewerFinalPls</string>
+    <string name="app_name">WTViewer</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
@@ -10,6 +10,9 @@
     <string name="menu_main">Main List of Toons</string>
     <string name="menu_episodes">Episodes</string>
     <string name="menu_viewer">Viewer</string>
+
+    <string name="menu_edit">Edit</string>
+    <string name="menu_delete">Delete</string>
 
     <string name="fab_label_web">Load by Web</string>
     <string name="fab_label_list">Load by list of links</string>
@@ -32,6 +35,9 @@
     <string name="hint_toonid">Toon ID</string>
     <string name="hint_epiid">Episode ID</string>
     <string name="hint_toontype">Toon Type</string>
+    <string name="hint_url">Url</string>
+
+    <string name="txt_url">Please type in a link of your desired toon.</string>
 
     <string name="content_desc_fab_options">It shows extra mini-FABs which does specific add-job.</string>
     <string name="content_desc_fab_web">It moves you to the page where you can add a toon by navigating yourself into that specific toon web page.</string>
@@ -43,6 +49,11 @@
 
     <string name="notif_invalid_link_in_list">Invalid url was in the list. Stopping iteration.</string>
     <string name="notif_link_not_ready">Main entry point is not yet prepared. Please wait shortly.</string>
+    <string name="notif_invalid_link_typed">Given url is invalid. Please try with another.</string>
+    <string name="notif_empty_link_typed">No url has been given.</string>
+    <string name="notif_empty_name_typed">No name has been given.</string>
 
     <string name="item_placeholder">New Item #%d</string>
+
+    <string name="btn_confirm">Confirm</string>
 </resources>

@@ -47,25 +47,17 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public Cursor loadDBCursorToons(){
         SQLiteDatabase db = this.getReadableDatabase();
-        db.beginTransaction();
 
         String selectQuery = "SELECT * FROM " + TABLE_NAME_TOONS + "";
-        Cursor cursor = null;
 
-        try{
-            cursor = db.rawQuery(selectQuery, null);
-            db.setTransactionSuccessful();
-        } catch(Exception e) {
-            e.printStackTrace();
-        } finally {
-            db.endTransaction();
-        }
-
-        return cursor;
+        return db.rawQuery(selectQuery, null);
     }
 
     public void insertToonContent(String title, String type, int toonid, int epiid, int releaseday) {
         SQLiteDatabase db = getWritableDatabase();
+
+        db.beginTransaction();
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL_TITLE, title);
         contentValues.put(COL_TYPE, type);
@@ -73,11 +65,18 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(COL_EPIID, epiid);
         contentValues.put(COL_RELEASEDAY, releaseday);
         db.insert(TABLE_NAME_TOONS, null, contentValues);
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+
         db.close();
     }
 
     public void insertToonContent(ToonsContainer container) {
         SQLiteDatabase db = getWritableDatabase();
+
+        db.beginTransaction();
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(ID, container.dbID);
         contentValues.put(COL_TITLE, container.toonName);
@@ -86,11 +85,18 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(COL_EPIID, container.episodeID);
         contentValues.put(COL_RELEASEDAY, container.releaseWeekdays);
         db.insert(TABLE_NAME_TOONS, null, contentValues);
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+
         db.close();
     }
 
     public int editToonContent(int id, String title, String type, int toonid, int epiid, int releaseday) {
         SQLiteDatabase db = getWritableDatabase();
+
+        db.beginTransaction();
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL_TITLE, title);
         contentValues.put(COL_TYPE, type);
@@ -98,7 +104,33 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(COL_EPIID, epiid);
         contentValues.put(COL_RELEASEDAY, releaseday);
         int toReturn = db.update(TABLE_NAME_TOONS, contentValues, ID + "='" + id + "'", null);
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+
         db.close();
+
+        return toReturn;
+    }
+
+    public int editToonContent(ToonsContainer container) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        db.beginTransaction();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COL_TITLE, container.toonName);
+        contentValues.put(COL_TYPE, container.toonType);
+        contentValues.put(COL_TOONID, container.toonID);
+        contentValues.put(COL_EPIID, container.episodeID);
+        contentValues.put(COL_RELEASEDAY, container.releaseWeekdays);
+        int toReturn = db.update(TABLE_NAME_TOONS, contentValues, ID + "='" + container.dbID + "'", null);
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+
+        db.close();
+
         return toReturn;
     }
 
@@ -132,6 +164,7 @@ public class DBHelper extends SQLiteOpenHelper {
             }
             cursor.close();
         }
+
         db.close();
 
         return list;
@@ -140,32 +173,25 @@ public class DBHelper extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public ToonsContainer getToonByID(int id) {
         SQLiteDatabase db = getReadableDatabase();
-        db.beginTransaction();
         String selectQuery = "SELECT * FROM " + TABLE_NAME_TOONS + " WHERE " + ID + " = " + id;
 
         ToonsContainer container = null;
 
-        try {
-            Cursor cursor = db.rawQuery(selectQuery, null);
-            if (cursor != null) {
-                if(cursor.moveToFirst()) {
-                    container = new ToonsContainer(
-                            cursor.getInt   (cursor.getColumnIndex(ID)),
-                            cursor.getString(cursor.getColumnIndex(COL_TITLE)),
-                            cursor.getString(cursor.getColumnIndex(COL_TYPE)),
-                            cursor.getInt   (cursor.getColumnIndex(COL_TOONID)),
-                            cursor.getInt   (cursor.getColumnIndex(COL_EPIID)),
-                            cursor.getInt   (cursor.getColumnIndex(COL_RELEASEDAY))
-                    );
-                }
-                cursor.close();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if (cursor != null) {
+            if(cursor.moveToFirst()) {
+                container = new ToonsContainer(
+                        cursor.getInt   (cursor.getColumnIndex(ID)),
+                        cursor.getString(cursor.getColumnIndex(COL_TITLE)),
+                        cursor.getString(cursor.getColumnIndex(COL_TYPE)),
+                        cursor.getInt   (cursor.getColumnIndex(COL_TOONID)),
+                        cursor.getInt   (cursor.getColumnIndex(COL_EPIID)),
+                        cursor.getInt   (cursor.getColumnIndex(COL_RELEASEDAY))
+                );
             }
-            db.setTransactionSuccessful();
-        } catch(Exception e) {
-            e.printStackTrace();
-        } finally {
-            db.endTransaction();
+            cursor.close();
         }
+
         db.close();
 
         return container;
@@ -174,7 +200,6 @@ public class DBHelper extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public int getToonIDAtLastPosition() {
         SQLiteDatabase db = getReadableDatabase();
-        db.beginTransaction();
         String selectQuery = "SELECT * FROM ( SELECT ROW_NUMBER () OVER ( ORDER BY " + ID + " ) RowNum, " + ID + ", "+ COL_TITLE + ", " + COL_TYPE + ", " + COL_TOONID + ", " + COL_EPIID + ", " + COL_RELEASEDAY + " FROM " + TABLE_NAME_TOONS + " )";
 
         int id = -1;
@@ -187,7 +212,7 @@ public class DBHelper extends SQLiteOpenHelper {
             }
             cursor.close();
         }
-        db.setTransactionSuccessful();
+
         db.close();
 
         return id;

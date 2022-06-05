@@ -7,13 +7,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 public class ToonsContainer implements Parcelable {
-    private static final int SUNDAY_FLAG    = 0b1000000;
-    private static final int MONDAY_FLAG    = 0b0100000;
-    private static final int TUESDAY_FLAG   = 0b0010000;
-    private static final int WEDNESDAY_FLAG = 0b0001000;
-    private static final int THURSDAY_FLAG  = 0b0000100;
-    private static final int FRIDAY_FLAG    = 0b0000010;
-    private static final int SATURDAY_FLAG  = 0b0000001;
+    private static final int SUN_FLAG = 0b1000000;
+    private static final int MON_FLAG = 0b0100000;
+    private static final int TUE_FLAG = 0b0010000;
+    private static final int WED_FLAG = 0b0001000;
+    private static final int THU_FLAG = 0b0000100;
+    private static final int FRI_FLAG = 0b0000010;
+    private static final int SAT_FLAG = 0b0000001;
 
     public int dbID;
     public String toonName, toonType;
@@ -73,13 +73,13 @@ public class ToonsContainer implements Parcelable {
     public Integer[] getAllReleaseDaysInArray() {
         ArrayList<Integer> releaseDays = new ArrayList<>();
 
-        if(releasesOnSunday())    releaseDays.add(Calendar.SUNDAY   );
-        if(releasesOnMonday())    releaseDays.add(Calendar.MONDAY   );
-        if(releasesOnTuesday())   releaseDays.add(Calendar.TUESDAY  );
-        if(releasesOnWednesday()) releaseDays.add(Calendar.WEDNESDAY);
-        if(releasesOnThursday())  releaseDays.add(Calendar.THURSDAY );
-        if(releasesOnFriday())    releaseDays.add(Calendar.FRIDAY   );
-        if(releasesOnSaturday())  releaseDays.add(Calendar.SATURDAY );
+        if(releasesOnSun()) releaseDays.add(Calendar.SUNDAY   );
+        if(releasesOnMon()) releaseDays.add(Calendar.MONDAY   );
+        if(releasesOnTue()) releaseDays.add(Calendar.TUESDAY  );
+        if(releasesOnWed()) releaseDays.add(Calendar.WEDNESDAY);
+        if(releasesOnThu()) releaseDays.add(Calendar.THURSDAY );
+        if(releasesOnFri()) releaseDays.add(Calendar.FRIDAY   );
+        if(releasesOnSat()) releaseDays.add(Calendar.SATURDAY );
 
         return releaseDays.toArray(new Integer[0]);
     }
@@ -87,45 +87,45 @@ public class ToonsContainer implements Parcelable {
     public String getAllReleaseDaysInString() {
         String releaseDays = "";
 
-        if(releasesOnSunday())    releaseDays += "SUN";
-        if(releasesOnMonday())    releaseDays += releaseDays.length() > 0 ? ", MON" :  "MON";
-        if(releasesOnTuesday())   releaseDays += releaseDays.length() > 0 ? ", TUE" :  "TUE";
-        if(releasesOnWednesday()) releaseDays += releaseDays.length() > 0 ? ", WED" :  "WED";
-        if(releasesOnThursday())  releaseDays += releaseDays.length() > 0 ? ", THU" :  "THU";
-        if(releasesOnFriday())    releaseDays += releaseDays.length() > 0 ? ", FRI" :  "FRI";
-        if(releasesOnSaturday())  releaseDays += releaseDays.length() > 0 ? ", SAT" :  "SAT";
+        if(releasesOnSun()) releaseDays += "SUN";
+        if(releasesOnMon()) releaseDays += releaseDays.length() > 0 ? ", MON" :  "MON";
+        if(releasesOnTue()) releaseDays += releaseDays.length() > 0 ? ", TUE" :  "TUE";
+        if(releasesOnWed()) releaseDays += releaseDays.length() > 0 ? ", WED" :  "WED";
+        if(releasesOnThu()) releaseDays += releaseDays.length() > 0 ? ", THU" :  "THU";
+        if(releasesOnFri()) releaseDays += releaseDays.length() > 0 ? ", FRI" :  "FRI";
+        if(releasesOnSat()) releaseDays += releaseDays.length() > 0 ? ", SAT" :  "SAT";
         return releaseDays;
     }
 
-    public boolean releasesOnSunday()    { return releaseMatchesFlag(releaseWeekdays, SUNDAY_FLAG); }
-    public boolean releasesOnMonday()    { return releaseMatchesFlag(releaseWeekdays, MONDAY_FLAG); }
-    public boolean releasesOnTuesday()   { return releaseMatchesFlag(releaseWeekdays, TUESDAY_FLAG); }
-    public boolean releasesOnWednesday() { return releaseMatchesFlag(releaseWeekdays, WEDNESDAY_FLAG); }
-    public boolean releasesOnThursday()  { return releaseMatchesFlag(releaseWeekdays, THURSDAY_FLAG); }
-    public boolean releasesOnFriday()    { return releaseMatchesFlag(releaseWeekdays, FRIDAY_FLAG); }
-    public boolean releasesOnSaturday()  { return releaseMatchesFlag(releaseWeekdays, SATURDAY_FLAG); }
+    public boolean releasesOnSun() { return releaseMatchesFlag(releaseWeekdays, SUN_FLAG); }
+    public boolean releasesOnMon() { return releaseMatchesFlag(releaseWeekdays, MON_FLAG); }
+    public boolean releasesOnTue() { return releaseMatchesFlag(releaseWeekdays, TUE_FLAG); }
+    public boolean releasesOnWed() { return releaseMatchesFlag(releaseWeekdays, WED_FLAG); }
+    public boolean releasesOnThu() { return releaseMatchesFlag(releaseWeekdays, THU_FLAG); }
+    public boolean releasesOnFri() { return releaseMatchesFlag(releaseWeekdays, FRI_FLAG); }
+    public boolean releasesOnSat() { return releaseMatchesFlag(releaseWeekdays, SAT_FLAG); }
 
     //region flag modifying methods
-    public void changeFlagSunday()    { releaseWeekdays = releaseWeekdays ^ SUNDAY_FLAG;    }
-    public void changeFlagMonday()    { releaseWeekdays = releaseWeekdays ^ MONDAY_FLAG;    }
-    public void changeFlagTuesday()   { releaseWeekdays = releaseWeekdays ^ TUESDAY_FLAG;   }
-    public void changeFlagWednesday() { releaseWeekdays = releaseWeekdays ^ WEDNESDAY_FLAG; }
-    public void changeFlagThursday()  { releaseWeekdays = releaseWeekdays ^ THURSDAY_FLAG;  }
-    public void changeFlagFriday()    { releaseWeekdays = releaseWeekdays ^ FRIDAY_FLAG;    }
-    public void changeFlagSaturday()  { releaseWeekdays = releaseWeekdays ^ SATURDAY_FLAG;  }
+    public void changeFlagSun() { releaseWeekdays = releaseWeekdays ^ SUN_FLAG;    }
+    public void changeFlagMon() { releaseWeekdays = releaseWeekdays ^ MON_FLAG;    }
+    public void changeFlagTue() { releaseWeekdays = releaseWeekdays ^ TUE_FLAG;   }
+    public void changeFlagWed() { releaseWeekdays = releaseWeekdays ^ WED_FLAG; }
+    public void changeFlagThu() { releaseWeekdays = releaseWeekdays ^ THU_FLAG;  }
+    public void changeFlagFri() { releaseWeekdays = releaseWeekdays ^ FRI_FLAG;    }
+    public void changeFlagSat() { releaseWeekdays = releaseWeekdays ^ SAT_FLAG;  }
 
-    public void enableFlagSunday()    { releaseWeekdays |= 1 << 6; }
-    public void enableFlagMonday()    { releaseWeekdays |= 1 << 5; }
-    public void enableFlagTuesday()   { releaseWeekdays |= 1 << 4; }
-    public void enableFlagWednesday() { releaseWeekdays |= 1 << 3; }
-    public void enableFlagThursday()  { releaseWeekdays |= 1 << 2; }
-    public void enableFlagFriday()    { releaseWeekdays |= 1 << 1; }
-    public void enableFlagSaturday()  { releaseWeekdays |= 1; }
+    public void enableFlagSun() { releaseWeekdays |= 1 << 6; }
+    public void enableFlagMon() { releaseWeekdays |= 1 << 5; }
+    public void enableFlagTue() { releaseWeekdays |= 1 << 4; }
+    public void enableFlagWed() { releaseWeekdays |= 1 << 3; }
+    public void enableFlagThu() { releaseWeekdays |= 1 << 2; }
+    public void enableFlagFri() { releaseWeekdays |= 1 << 1; }
+    public void enableFlagSat() { releaseWeekdays |= 1; }
 
-    public void disableFlagSunday()    { releaseWeekdays &= ~(1 << 6); }
-    public void disableFlagMonday()    { releaseWeekdays &= ~(1 << 5); }
-    public void disableFlagTuesday()   { releaseWeekdays &= ~(1 << 4); }
-    public void disableFlagWednesday() { releaseWeekdays &= ~(1 << 3); }
+    public void disableFlagSun()    { releaseWeekdays &= ~(1 << 6); }
+    public void disableFlagMon()    { releaseWeekdays &= ~(1 << 5); }
+    public void disableFlagTue()   { releaseWeekdays &= ~(1 << 4); }
+    public void disableFlagWed() { releaseWeekdays &= ~(1 << 3); }
     public void disableFlagThursday()  { releaseWeekdays &= ~(1 << 2); }
     public void disableFlagFriday()    { releaseWeekdays &= ~(1 << 1); }
     public void disableFlagSaturday()  { releaseWeekdays &= ~(1); }

@@ -52,6 +52,8 @@ public class FragmentWeb extends Fragment implements EntryPointGetter.Callback, 
         String baseLink = EntryPointGetter.getLastValidEntryPoint();
         if(baseLink.equals("")) {
             EntryPointGetter.requestEntryPointLink(this);
+        } else {
+            onEntryAquired(baseLink);
         }
 
         binding.btnAddthispage.setOnClickListener(v -> Navigation.findNavController(view).navigate(FragmentWebDirections.actionWebFragmentToFragmentAddNew(new String[] { currentLink })));
