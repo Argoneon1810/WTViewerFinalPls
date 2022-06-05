@@ -1,6 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.addbylist.FragmentList"/>
+    tools:context=".ui.addbylist.FragmentList">
+
+    <TextView
+        android:id="@+id/tv_list_eg_line1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/txt_url_list"
+        app:layout_constraintStart_toStartOf="@id/etxt_addlist_url"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_list_eg_line2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/txt_url_list_2"
+        app:layout_constraintStart_toStartOf="@id/etxt_addlist_url"
+        app:layout_constraintTop_toBottomOf="@+id/tv_list_eg_line1" />
+
+    <EditText
+        android:id="@+id/etxt_addlist_url"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:ems="10"
+        android:gravity="start|top"
+        android:hint="@string/hint_url_list"
+        android:inputType="textUri|textMultiLine"
+        android:minHeight="48dp"
+        app:layout_constraintBottom_toTopOf="@id/btn_addlist_confirm"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_list_eg_line2" />
+
+    <Button
+        android:id="@+id/btn_addlist_confirm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/btn_confirm"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/etxt_addlist_url"
+        app:layout_constraintStart_toStartOf="@id/etxt_addlist_url" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -38,18 +38,6 @@ public class FragmentEdit extends Fragment {
 
         redTransparent = new ColorDrawable(requireContext().getColor(R.color.red_transparent));
 
-        binding.etxtEditTitle.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                currentContainer.toonName = s.toString();
-            }
-        });
-
         binding.btnEditSun.setOnClickListener(v -> {
             if(setButtonMatchingStateAndReturn(v, !currentContainer.releasesOnSun()))
                 currentContainer.enableFlagSun();

@@ -36,8 +36,11 @@
     <string name="hint_epiid">Episode ID</string>
     <string name="hint_toontype">Toon Type</string>
     <string name="hint_url">Url</string>
+    <string name="hint_url_list">List of Urls</string>
 
     <string name="txt_url">Please type in a link of your desired toon.</string>
+    <string name="txt_url_list">Please type in a list of links of your desired toons.</string>
+    <string name="txt_url_list_2">Each link should be separated with a linebreak.</string>
 
     <string name="content_desc_fab_options">It shows extra mini-FABs which does specific add-job.</string>
     <string name="content_desc_fab_web">It moves you to the page where you can add a toon by navigating yourself into that specific toon web page.</string>

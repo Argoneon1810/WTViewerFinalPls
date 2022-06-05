@@ -128,7 +128,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void onClickFABList(View view) {
         hideAllFABs();
-        Log.i("", "this is list fab");
+//        Log.i("", "this is list fab");
+        Navigation.findNavController(this, R.id.nav_host_fragment_content_main).navigate(R.id.listFragment);
     }
 
     private void onClickFABLink(View view) {
