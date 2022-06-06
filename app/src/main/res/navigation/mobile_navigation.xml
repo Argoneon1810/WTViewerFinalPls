@@ -100,7 +100,9 @@
         tools:layout="@layout/fragment_add_new" >
         <action
             android:id="@+id/action_fragmentAddNew_to_nav_main"
-            app:destination="@id/nav_main" />
+            app:destination="@id/nav_main"
+            app:popUpTo="@id/nav_main"
+            app:popUpToInclusive="true" />
         <argument
             android:name="urls"
             app:argType="string[]"
@@ -113,7 +115,9 @@
         tools:layout="@layout/fragment_edit" >
         <action
             android:id="@+id/action_fragmentEdit_to_nav_main"
-            app:destination="@id/nav_main" />
+            app:destination="@id/nav_main"
+            app:popUpTo="@id/nav_main"
+            app:popUpToInclusive="true" />
         <argument
             android:name="Toon"
             app:argType="ark.noah.wtviewerfinalpls.ui.main.ToonsContainer" />
