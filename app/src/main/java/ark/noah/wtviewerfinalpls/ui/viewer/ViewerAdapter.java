@@ -2,7 +2,11 @@ package ark.noah.wtviewerfinalpls.ui.viewer;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.BlendMode;
+import android.graphics.BlendModeColorFilter;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +33,13 @@ public class ViewerAdapter extends BaseAdapter {
         ic_loading = context.getDrawable(R.drawable.ic_baseline_downloading_24);
         ic_empty   = context.getDrawable(R.drawable.ic_baseline_device_unknown_24);
         ic_error   = context.getDrawable(R.drawable.ic_baseline_error_outline_24);
+
+        TypedValue value = new TypedValue();
+        context.getTheme().resolveAttribute(android.R.attr.textColorSecondary, value, true);
+        BlendModeColorFilter greyColorFilter = new BlendModeColorFilter(Color.toArgb(value.data), BlendMode.SRC_ATOP);
+        ic_loading.setColorFilter(greyColorFilter);
+        ic_empty.setColorFilter(greyColorFilter);
+        ic_error.setColorFilter(greyColorFilter);
     }
 
     @Override
