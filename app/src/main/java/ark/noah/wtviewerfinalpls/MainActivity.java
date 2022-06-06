@@ -91,6 +91,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showMiniFABs() {
+        if(binding == null) return;
+
         binding.appBarMain.fabLink.setVisibility(View.VISIBLE);
         binding.appBarMain.fabList.setVisibility(View.VISIBLE);
         binding.appBarMain.fabWeb .setVisibility(View.VISIBLE);
@@ -100,11 +102,15 @@ public class MainActivity extends AppCompatActivity {
         binding.appBarMain.btnFablabelWeb .setVisibility(View.VISIBLE);
     }
     private void showAllFABs() {
+        if(binding == null) return;
+
         binding.appBarMain.fabOptions.setVisibility(View.VISIBLE);
         showMiniFABs();
     }
 
     private void hideMiniFABs() {
+        if(binding == null) return;
+
         binding.appBarMain.fabLink.setVisibility(View.GONE);
         binding.appBarMain.fabList.setVisibility(View.GONE);
         binding.appBarMain.fabWeb .setVisibility(View.GONE);
@@ -114,6 +120,8 @@ public class MainActivity extends AppCompatActivity {
         binding.appBarMain.btnFablabelWeb .setVisibility(View.GONE);
     }
     public void hideAllFABs() {
+        if(binding == null) return;
+
         binding.appBarMain.fabOptions.setVisibility(View.GONE);
         hideMiniFABs();
     }

@@ -37,33 +37,33 @@ public class FragmentList extends Fragment {
                 return;
             }
 
-            Log.i("", "initial user input was: " + input);
+//            Log.i("", "initial user input was: " + input);
             ArrayList<String> urls = new ArrayList<>();
             while(true) {
                 int linebreak = input.indexOf("\n");
                 if(linebreak == -1) {
-                    Log.i("", "current user input substring did not have a linebreak");
+//                    Log.i("", "current user input substring did not have a linebreak");
                     if(WtwtLinkParser.isLinkValid(input)) {
-                        Log.i("", "the text was a valid link");
+//                        Log.i("", "the text was a valid link");
                         urls.add(input);
-                        Log.i("", "number of item in the list are: " + urls.size());
+//                        Log.i("", "number of item in the list are: " + urls.size());
                     }
                     break;
                 }
-                Log.i("", "current user input substring had a linebreak");
+//                Log.i("", "current user input substring had a linebreak");
 
                 String pre_linebreak = input.substring(0, linebreak);
-                Log.i("", "text prior to linebreak is: " + pre_linebreak);
+//                Log.i("", "text prior to linebreak is: " + pre_linebreak);
                 if(WtwtLinkParser.isLinkValid(pre_linebreak)) {
-                    Log.i("", "the text was a valid link");
+//                    Log.i("", "the text was a valid link");
                     urls.add(pre_linebreak);
-                    Log.i("", "number of item in the list are: " + urls.size());
+//                    Log.i("", "number of item in the list are: " + urls.size());
                 }
 
                 input = input.substring(linebreak + 1);
-                Log.i("","next user input substring is: " + input);
+//                Log.i("","next user input substring is: " + input);
             }
-            Log.i("", "final url list size is " + urls.size());
+//            Log.i("", "final url list size is " + urls.size());
 
             FragmentListDirections.ActionListFragmentToFragmentAddNew action = FragmentListDirections.actionListFragmentToFragmentAddNew(urls.toArray(new String[0]));
             Navigation.findNavController(view).navigate(action);

@@ -82,10 +82,13 @@ public class FragmentEdit extends Fragment {
         });
 
         binding.btnEditConfirm.setOnClickListener(v -> {
-            if(binding.etxtEditTitle.getText().toString().equals("")) {
+            String input = binding.etxtEditTitle.getText().toString();
+            if(input.equals("")) {
                 Toast.makeText(requireContext().getApplicationContext(), requireContext().getText(R.string.notif_empty_name_typed), Toast.LENGTH_SHORT).show();
                 return;
             }
+
+            currentContainer.toonName = input;
 
             FragmentEditDirections.ActionFragmentEditToNavMain action =
                     FragmentEditDirections.actionFragmentEditToNavMain();
