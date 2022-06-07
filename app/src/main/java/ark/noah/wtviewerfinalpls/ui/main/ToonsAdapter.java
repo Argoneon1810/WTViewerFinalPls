@@ -85,6 +85,10 @@ public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> 
         return mData.get(position);
     }
 
+    public int getIndexOfItem(ToonsContainer container) {
+        return mData.indexOf(container);
+    }
+
     public int deleteItemAndGetIDOFDeleted(ToonsContainer target) {
         int id = target.dbID;
         int posToUpdate = mData.indexOf(target);

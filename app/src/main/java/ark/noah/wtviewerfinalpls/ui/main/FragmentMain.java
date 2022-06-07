@@ -1,6 +1,8 @@
 package ark.noah.wtviewerfinalpls.ui.main;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -25,6 +27,7 @@ import ark.noah.wtviewerfinalpls.DBHelper;
 import ark.noah.wtviewerfinalpls.EntryPointGetter;
 import ark.noah.wtviewerfinalpls.MainActivity;
 import ark.noah.wtviewerfinalpls.R;
+import ark.noah.wtviewerfinalpls.WtwtLinkParser;
 import ark.noah.wtviewerfinalpls.databinding.FragmentMainBinding;
 
 public class FragmentMain extends Fragment {
@@ -47,11 +50,19 @@ public class FragmentMain extends Fragment {
         ToonsAdapter adapter = new ToonsAdapter(mList);
         binding.recMain.setAdapter(adapter);
 
+
+
         binding.recMain.addOnItemTouchListener(new RecyclerTouchListener(requireContext().getApplicationContext(), binding.recMain, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
                 if(EntryPointGetter.getLastValidEntryPoint().equals("")) {
                     Toast.makeText(requireContext().getApplicationContext(), requireContext().getText(R.string.notif_link_not_ready), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if(!WtwtLinkParser.isWebToon(adapter.getItemAtPosition(position).toonType)) {
+                    Toast.makeText(requireContext().getApplicationContext(), requireContext().getText(R.string.notif_is_not_webtoon), Toast.LENGTH_LONG).show();
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(WtwtLinkParser.rebuildLinkEpisodes(adapter.getItemAtPosition(position))));
+                    startActivity(browserIntent);
                     return;
                 }
                 FragmentMainDirections.ActionNavMainToFragmentEpisodes action = FragmentMainDirections.actionNavMainToFragmentEpisodes(adapter.getItemAtPosition(position));
@@ -98,6 +109,7 @@ public class FragmentMain extends Fragment {
         if(wasEdit) {
             adapter.updateItem(containers[0]);
             dbHelper.editToonContent(containers[0]);
+            binding.recMain.scrollToPosition(adapter.getIndexOfItem(containers[0]));
         } else {
             int lastID = dbHelper.getToonIDAtLastPosition();
             for(int i = 1; i <= containers.length; ++i) {

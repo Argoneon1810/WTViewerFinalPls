@@ -55,6 +55,7 @@
     <string name="notif_invalid_link_typed">Given url is invalid. Please try with another.</string>
     <string name="notif_empty_link_typed">No url has been given.</string>
     <string name="notif_empty_name_typed">No name has been given.</string>
+    <string name="notif_is_not_webtoon">Sorry, we are having difficulty to load non-webtoon contents to our viewer.</string>
 
     <string name="item_placeholder">New Item #%d</string>
 

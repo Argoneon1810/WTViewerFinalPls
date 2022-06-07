@@ -23,11 +23,11 @@ public class WtwtLinkParser {
 
     private static Info extractInfo(String url) {
         try {
-            URL aUrl = new URL(url);
+            URL aURL = new URL(url);
             Info info = new Info();
-            info.toonID = extractToonId(aUrl);
-            info.episodeID = extractEpisodeID(aUrl);
-            info.toonType = aUrl.getPath();
+            info.toonID = extractToonId(aURL);
+            info.episodeID = extractEpisodeID(aURL);
+            info.toonType = extractToonType(aURL);
             return info;
         } catch (MalformedURLException | NumberFormatException e) {
             e.printStackTrace();
@@ -67,6 +67,18 @@ public class WtwtLinkParser {
         return -1;
     }
 
+    public static String extractToonType(String url) {
+        try {
+            return extractToonType(new URL(url));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+    private static String extractToonType(URL aURL)  {
+        return aURL.getPath();
+    }
+
     public static boolean tryPopulateInfo(Context applicationContext, String[] urls, int[] toonIDs, int[] episodeIds, String[] toonTypes) {
         for (int i = 0; i < urls.length; ++i) {
             Info info = extractInfo(urls[i]);
@@ -95,5 +107,9 @@ public class WtwtLinkParser {
         postfix = postfix + "?toon=" + container.toonID;
 
         return entryPoint + postfix;
+    }
+
+    public static boolean isWebToon(String toonType) {
+        return toonType.charAt(1)=='v';
     }
 }
