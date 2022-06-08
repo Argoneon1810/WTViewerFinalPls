@@ -15,13 +15,13 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "Content.db";
     public static final int DATABASE_VERSION = 1;
 
-    public final String TABLE_NAME_TOONS = "Table_toons";
-    public final String ID = "id";
-    public final String COL_TITLE = "title";
-    public final String COL_TYPE = "type";
-    public final String COL_TOONID = "toonid";
-    public final String COL_EPIID = "epiid";
-    public final String COL_RELEASEDAY = "releaseweekday";
+    public static final String TABLE_NAME_TOONS = "Table_toons";
+    public static final String ID = "id";
+    public static final String COL_TITLE = "title";
+    public static final String COL_TYPE = "type";
+    public static final String COL_TOONID = "toonid";
+    public static final String COL_EPIID = "epiid";
+    public static final String COL_RELEASEDAY = "releaseweekday";
 
     private final String createQueryToons = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME_TOONS +"("
             + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -48,7 +48,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public Cursor loadDBCursorToons(){
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String selectQuery = "SELECT * FROM " + TABLE_NAME_TOONS + "";
+        String selectQuery = "SELECT * FROM " + TABLE_NAME_TOONS + " ";
 
         return db.rawQuery(selectQuery, null);
     }
@@ -78,7 +78,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.beginTransaction();
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(ID, container.dbID);
+//        contentValues.put(ID, container.dbID);
         contentValues.put(COL_TITLE, container.toonName);
         contentValues.put(COL_TYPE, container.toonType);
         contentValues.put(COL_TOONID, container.toonID);
