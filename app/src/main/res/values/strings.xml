@@ -44,6 +44,7 @@
     <string name="hint_url_list">List of Urls</string>
 
     <string name="item_placeholder">New Item #%d</string>
+    <string name="sample">Sample</string>
 
     <string name="btn_add_this_page">Add This Page</string>
     <string name="btn_confirm">Confirm</string>

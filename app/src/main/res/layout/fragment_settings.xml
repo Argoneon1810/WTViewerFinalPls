@@ -34,20 +34,12 @@
                 android:layout_height="wrap_content"
                 android:text="@string/txt_url_entry_2" />
 
-            <EditText
-                android:id="@+id/etxt_setting_entry_url"
+            <Spinner
+                android:id="@+id/spinner_setting_url"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="@string/hint_url"
-                android:inputType="textUri"
+                android:contentDescription="@string/hint_url"
                 android:minHeight="48dp" />
-
-            <Button
-                android:id="@+id/btn_setting_url_apply"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/btn_apply" />
 
             <Space
                 android:layout_width="match_parent"
