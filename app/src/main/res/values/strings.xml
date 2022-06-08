@@ -26,7 +26,7 @@
     <string name="fab_label_link">Load by single link</string>
 
     <string name="shared_pref_key">sharedpreffragmain</string>
-    <string name="shared_pref_toonslist_key">toonslist</string>
+    <string name="shared_pref_entry_key">entrypoint</string>
 
     <string name="day_sun_short">SUN</string>
     <string name="day_mon_short">MON</string>
@@ -43,7 +43,17 @@
     <string name="hint_url">Url</string>
     <string name="hint_url_list">List of Urls</string>
 
+    <string name="item_placeholder">New Item #%d</string>
+
+    <string name="btn_add_this_page">Add This Page</string>
+    <string name="btn_confirm">Confirm</string>
+    <string name="btn_apply">Apply</string>
+    <string name="btn_backup">Back-up</string>
+    <string name="btn_restore">Restore</string>
+
     <string name="txt_url">Please type in a link of your desired toon.</string>
+    <string name="txt_url_entry">Please type in a link of currently working link acquirer.</string>
+    <string name="txt_url_entry_2">(Default is https://nicelink6.com/)</string>
     <string name="txt_url_list">Please type in a list of links of your desired toons.</string>
     <string name="txt_url_list_2">Each link should be separated with a linebreak.</string>
 
@@ -61,9 +71,6 @@
     <string name="notif_empty_link_typed">No url has been given.</string>
     <string name="notif_empty_name_typed">No name has been given.</string>
     <string name="notif_is_not_webtoon">Sorry, we are having difficulty to load non-webtoon contents to our viewer.</string>
-
-    <string name="item_placeholder">New Item #%d</string>
-
-    <string name="btn_add_this_page">Add This Page</string>
-    <string name="btn_confirm">Confirm</string>
+    <string name="notif_valid_entry_root">Received a valid link acquirer. App will be using this link for latter loading.</string>
+    <string name="notif_invalid_entry_root">Received an invalid link acquirer. Setting it back to default.</string>
 </resources>

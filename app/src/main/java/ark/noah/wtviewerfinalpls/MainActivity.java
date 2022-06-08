@@ -1,6 +1,8 @@
 package ark.noah.wtviewerfinalpls;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.google.android.material.navigation.NavigationView;
@@ -14,13 +16,19 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import ark.noah.wtviewerfinalpls.databinding.ActivityMainBinding;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements EntryPointGetter.EntryPointParser.Callback {
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
     private boolean bVisible;
 
     private BackPressEvent backPressEvent;
+
+    SharedPreferences sharedPreferences;
+
+    public interface BackPressEvent {
+        boolean onBackPressedExtra();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +39,10 @@ public class MainActivity extends AppCompatActivity {
 
         setSupportActionBar(binding.appBarMain.toolbar);
 
-        EntryPointGetter.requestEntryPointLink(null);
+        sharedPreferences = getSharedPreferences(getString(R.string.shared_pref_key), MODE_PRIVATE);
+        String entryUrl = sharedPreferences.getString(getString(R.string.shared_pref_entry_key), EntryPointGetter.EntryPointParser.defaultEntryRoot);
+
+        EntryPointGetter.EntryPointParser.validateLink(entryUrl, this);
 
         bVisible = false;
         binding.appBarMain.fabWeb.setOnClickListener(this::onClickFABWeb);
@@ -121,31 +132,29 @@ public class MainActivity extends AppCompatActivity {
     //region onclicks
     private void onClickFABWeb(View view) {
         hideAllFABs();
-        //Log.i("", "this is web fab");
         Navigation.findNavController(this, R.id.nav_host_fragment_content_main).navigate(R.id.webFragment);
     }
 
     private void onClickFABList(View view) {
         hideAllFABs();
-//        Log.i("", "this is list fab");
         Navigation.findNavController(this, R.id.nav_host_fragment_content_main).navigate(R.id.listFragment);
     }
 
     private void onClickFABLink(View view) {
         hideAllFABs();
-//        Log.i("", "this is link fab");
         Navigation.findNavController(this, R.id.nav_host_fragment_content_main).navigate(R.id.linkFragment);
     }
     //endregion
-
-    public interface BackPressEvent {
-        boolean onBackPressedExtra();
-    }
 
     public void assignBackPressEvent(BackPressEvent backPressEvent) {
         this.backPressEvent = backPressEvent;
     }
 
     public void resumedFromMainFragment() { resetFABsToInitialState(); }
-    public void resumedFromOtherFragment() { hideAllFABs();}
+    public void resumedFromOtherFragment() { hideAllFABs(); }
+
+    @Override
+    public void onValidLinkSet() {
+        EntryPointGetter.requestEntryPointLink(null);
+    }
 }

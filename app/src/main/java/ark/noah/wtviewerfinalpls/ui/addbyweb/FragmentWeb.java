@@ -79,7 +79,6 @@ public class FragmentWeb extends Fragment implements EntryPointGetter.Callback, 
     @Override
     public void onEntryAquired(String url) {
         baseLink = url;
-        Log.i("", "this is in web fragment" + url);
         new ExecutorRunner().execute(
                 () -> {
                     Document document = null;
