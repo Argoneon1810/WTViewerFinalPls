@@ -45,9 +45,12 @@ public class FragmentWeb extends Fragment implements EntryPointGetter.Callback, 
         binding = FragmentWebBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
-        ((MainActivity)requireActivity()).assignBackPressEvent(this);
+        MainActivity activity = ((MainActivity)requireActivity());
+        activity.assignBackPressEvent(this);
+        activity.hideAllFABs();
 
         binding.webView.setWebViewClient(new MyBrowser());
+        //without javascript, search feature on wtwt website is not available. no choice.
         binding.webView.getSettings().setJavaScriptEnabled(true);
         String baseLink = EntryPointGetter.getLastValidEntryPoint();
         if(baseLink.equals("")) {

@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import ark.noah.wtviewerfinalpls.MainActivity;
 import ark.noah.wtviewerfinalpls.R;
 import ark.noah.wtviewerfinalpls.databinding.FragmentEditBinding;
 import ark.noah.wtviewerfinalpls.ui.main.ToonsContainer;
@@ -37,6 +38,8 @@ public class FragmentEdit extends Fragment {
         View view = binding.getRoot();
 
         redTransparent = new ColorDrawable(requireContext().getColor(R.color.red_transparent));
+
+        ((MainActivity)requireActivity()).hideAllFABs();
 
         binding.btnEditSun.setOnClickListener(v -> {
             if(setButtonMatchingStateAndReturn(v, !currentContainer.releasesOnSun()))
@@ -127,6 +130,7 @@ public class FragmentEdit extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        ((MainActivity) requireActivity()).resumedFromOtherFragment();
     }
 
     private boolean setButtonMatchingStateAndReturn(View view, boolean state) {

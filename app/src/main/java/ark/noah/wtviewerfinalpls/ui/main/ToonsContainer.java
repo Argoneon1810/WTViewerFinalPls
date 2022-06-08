@@ -83,6 +83,15 @@ public class ToonsContainer implements Parcelable {
 
         return releaseDays.toArray(new Integer[0]);
     }
+    public int getFirstReleaseDay() {
+        if(releasesOnSun()) return Calendar.SUNDAY   ;
+        else if(releasesOnMon()) return Calendar.MONDAY   ;
+        else if(releasesOnTue()) return Calendar.TUESDAY  ;
+        else if(releasesOnWed()) return Calendar.WEDNESDAY;
+        else if(releasesOnThu()) return Calendar.THURSDAY ;
+        else if(releasesOnFri()) return Calendar.FRIDAY   ;
+        else                     return Calendar.SATURDAY ;
+    }
 
     public String getAllReleaseDaysInString() {
         String releaseDays = "";

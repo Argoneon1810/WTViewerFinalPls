@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import ark.noah.wtviewerfinalpls.MainActivity;
 import ark.noah.wtviewerfinalpls.R;
 import ark.noah.wtviewerfinalpls.WtwtLinkParser;
 import ark.noah.wtviewerfinalpls.databinding.FragmentLinkBinding;
@@ -28,6 +29,8 @@ public class FragmentLink extends Fragment {
 
         binding = FragmentLinkBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
+
+        ((MainActivity)requireActivity()).hideAllFABs();
 
         binding.btnAddlinkConfirm.setOnClickListener(v -> {
             String input = binding.etxtAddlinkUrl.getText().toString();
@@ -53,5 +56,11 @@ public class FragmentLink extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivity)requireActivity()).resumedFromOtherFragment();
     }
 }

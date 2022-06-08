@@ -2,8 +2,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_sort"
+        android:iconTint="@color/design_default_color_on_secondary"
+        android:iconTintMode="src_atop"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+        android:title="@string/action_sort"
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:id="@+id/action_sort_fifo"
+                android:title="@string/action_sort_fifo" />
+            <item
+                android:id="@+id/action_sort_alphabet"
+                android:title="@string/action_sort_alphabet" />
+            <item
+                android:id="@+id/action_sort_release"
+                android:title="@string/action_sort_release" />
+        </menu>
+    </item>
 </menu>

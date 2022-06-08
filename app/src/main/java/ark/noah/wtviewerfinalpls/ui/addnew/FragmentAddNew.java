@@ -35,6 +35,8 @@ public class FragmentAddNew extends Fragment{
         binding = FragmentAddNewBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
+        ((MainActivity)requireActivity()).hideAllFABs();
+
         ArrayList<ToonsContainer> mList = new ArrayList<>();
         ReviewAdapter adapter = new ReviewAdapter(mList);
         binding.recAddnew.setAdapter(adapter);

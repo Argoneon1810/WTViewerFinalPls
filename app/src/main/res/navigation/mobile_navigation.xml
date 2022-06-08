@@ -37,6 +37,9 @@
             android:name="wasEdit"
             android:defaultValue="false"
             app:argType="boolean" />
+        <action
+            android:id="@+id/action_nav_main_to_fragmentSettings"
+            app:destination="@id/fragmentSettings" />
     </fragment>
 
     <fragment
@@ -122,4 +125,9 @@
             android:name="Toon"
             app:argType="ark.noah.wtviewerfinalpls.ui.main.ToonsContainer" />
     </fragment>
+    <fragment
+        android:id="@+id/fragmentSettings"
+        android:name="ark.noah.wtviewerfinalpls.ui.settings.FragmentSettings"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
 </navigation>

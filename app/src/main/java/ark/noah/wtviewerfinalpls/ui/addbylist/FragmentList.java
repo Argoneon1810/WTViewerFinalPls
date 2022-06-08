@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import ark.noah.wtviewerfinalpls.MainActivity;
 import ark.noah.wtviewerfinalpls.R;
 import ark.noah.wtviewerfinalpls.WtwtLinkParser;
 import ark.noah.wtviewerfinalpls.databinding.FragmentListBinding;
@@ -29,6 +30,8 @@ public class FragmentList extends Fragment {
 
         binding = FragmentListBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
+
+        ((MainActivity)requireActivity()).hideAllFABs();
 
         binding.btnAddlistConfirm.setOnClickListener(v -> {
             String input = binding.etxtAddlistUrl.getText().toString();
@@ -76,5 +79,11 @@ public class FragmentList extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivity)requireActivity()).resumedFromOtherFragment();
     }
 }

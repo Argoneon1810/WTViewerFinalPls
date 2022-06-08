@@ -1,13 +1,11 @@
 package ark.noah.wtviewerfinalpls.ui.main;
 
-
 import android.content.Context;
 import android.graphics.Color;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,11 +15,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 
 import ark.noah.wtviewerfinalpls.R;
 
 public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> {
     private ArrayList<ToonsContainer> mData;
+    private SortManager sortManager;
+
+    private boolean bResorted = true;
 
     class ViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
@@ -37,8 +39,32 @@ public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> 
         }
     }
 
+    enum SortType {
+        FIFO,
+        ALPHABET,
+        RELEASEDAY,
+    }
+    enum SortDirection {
+        ASCENDING,
+        DESCENDING,
+    }
+
+    class SortManager {
+        private SortType sortType = SortType.FIFO;
+        private SortDirection sortDirection = SortDirection.ASCENDING;
+
+        public boolean isSortedByAlphabet() { return sortType == SortType.ALPHABET; }
+        public boolean isSortedByFIFO() { return sortType == SortType.FIFO; }
+        public boolean isSortedByReleaseDay() { return sortType == SortType.RELEASEDAY; }
+        public void setSortType(SortType sortType) { this.sortType = sortType; }
+
+        public boolean isAscending() { return sortDirection == SortDirection.ASCENDING; }
+        public void setSortDirection(SortDirection dir) { sortDirection = dir; }
+    }
+
     public ToonsAdapter(ArrayList<ToonsContainer> list) {
         mData = list;
+        sortManager = new SortManager();
     }
 
     @NonNull
@@ -125,5 +151,20 @@ public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> 
         int startIndex = mData.size();
         mData.addAll(Arrays.asList(containers.clone()));
         notifyItemRangeInserted(startIndex, mData.size()-1);
+    }
+
+    public SortManager getSortManager() { return sortManager; }
+    public void sortData(Comparator<ToonsContainer> toonsContainerComparator) {
+        mData.sort(toonsContainerComparator);
+        bResorted = true;
+        notifyDataSetChanged();     //list after sort might be completely different from list before sort, so no choice.
+    }
+
+    public boolean isResorted() {
+        if(bResorted) {
+            bResorted = false;
+            return true;
+        }
+        return false;
     }
 }

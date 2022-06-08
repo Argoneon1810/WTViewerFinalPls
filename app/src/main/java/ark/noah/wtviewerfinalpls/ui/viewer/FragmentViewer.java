@@ -21,6 +21,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import ark.noah.wtviewerfinalpls.MainActivity;
 import ark.noah.wtviewerfinalpls.databinding.FragmentViewerBinding;
 
 public class FragmentViewer extends Fragment {
@@ -39,6 +40,8 @@ public class FragmentViewer extends Fragment {
 
         binding = FragmentViewerBinding.inflate(inflater, container, false);
 
+        ((MainActivity)requireActivity()).hideAllFABs();
+
         return binding.getRoot();
     }
 
@@ -52,6 +55,12 @@ public class FragmentViewer extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivity)requireActivity()).resumedFromOtherFragment();
     }
 
     Handler handler = new Handler((m) -> {

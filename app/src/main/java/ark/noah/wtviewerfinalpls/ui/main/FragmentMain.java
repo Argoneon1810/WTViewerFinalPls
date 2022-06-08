@@ -1,19 +1,29 @@
 package ark.noah.wtviewerfinalpls.ui.main;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BlendMode;
+import android.graphics.BlendModeColorFilter;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -21,6 +31,8 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Locale;
 import java.util.Objects;
 
 import ark.noah.wtviewerfinalpls.DBHelper;
@@ -36,6 +48,10 @@ public class FragmentMain extends Fragment {
     private FragmentMainBinding binding;
     private DBHelper dbHelper;
 
+    Drawable ic_up, ic_down;
+    BlendModeColorFilter blackColorFilter;
+
+    @SuppressLint("UseCompatLoadingForDrawables")
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel =
@@ -46,11 +62,20 @@ public class FragmentMain extends Fragment {
 
         dbHelper = new DBHelper(requireContext());
 
+        ic_up = requireContext().getDrawable(R.drawable.ic_baseline_arrow_drop_up_24).mutate();
+        ic_down = requireContext().getDrawable(R.drawable.ic_baseline_arrow_drop_down_24).mutate();
+
+        TypedValue value = new TypedValue();
+        requireContext().getTheme().resolveAttribute(R.attr.colorOnSecondary, value, true);
+        @ColorInt int fontColorInt = value.data;
+        blackColorFilter = new BlendModeColorFilter(fontColorInt, BlendMode.SRC_ATOP);
+
+        ic_up.setColorFilter(blackColorFilter);
+        ic_down.setColorFilter(blackColorFilter);
+
         ArrayList<ToonsContainer> mList = dbHelper.getAllToons();
         ToonsAdapter adapter = new ToonsAdapter(mList);
         binding.recMain.setAdapter(adapter);
-
-
 
         binding.recMain.addOnItemTouchListener(new RecyclerTouchListener(requireContext().getApplicationContext(), binding.recMain, new ClickListener() {
             @Override
@@ -89,6 +114,8 @@ public class FragmentMain extends Fragment {
                 popupMenu.show();
             }
         }));
+
+        setHasOptionsMenu(true);
 
         return view;
     }
@@ -132,6 +159,93 @@ public class FragmentMain extends Fragment {
     public void onResume() {
         super.onResume();
         ((MainActivity) requireActivity()).resumedFromMainFragment();
+    }
+
+    @SuppressLint("RestrictedApi")
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.main, menu);
+
+        if(menu instanceof MenuBuilder) {
+            MenuBuilder m = (MenuBuilder) menu;
+            m.setOptionalIconsVisible(true);
+            for (int i = 0; i < menu.size(); ++i) {
+                menu.getItem(i).setIconTintBlendMode(BlendMode.SRC_ATOP);
+            }
+        }
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
+        ToonsAdapter adapter = (ToonsAdapter) binding.recMain.getAdapter();
+        if(adapter == null) return;
+
+        if(!adapter.isResorted()) return;
+
+        ToonsAdapter.SortManager sortManager = adapter.getSortManager();
+        Menu nestedMenu = menu.getItem(0).getSubMenu();
+        for (int i = 0; i < nestedMenu.size(); ++i) {
+            MenuItem subItem = nestedMenu.getItem(i);
+            if(subItem.getItemId() == R.id.action_sort_fifo)
+                if(sortManager.isSortedByFIFO())
+                    if(sortManager.isAscending()) subItem.setIcon(ic_down); else subItem.setIcon(ic_up);
+                else subItem.setIcon(null);
+            else if(subItem.getItemId() == R.id.action_sort_alphabet)
+                if(sortManager.isSortedByAlphabet())
+                    if(sortManager.isAscending()) subItem.setIcon(ic_down); else subItem.setIcon(ic_up);
+                else subItem.setIcon(null);
+            else if(subItem.getItemId() == R.id.action_sort_release)
+                if(sortManager.isSortedByReleaseDay())
+                    if(sortManager.isAscending()) subItem.setIcon(ic_down); else subItem.setIcon(ic_up);
+                else subItem.setIcon(null);
+            else subItem.setIcon(null);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem menuItem) {
+        ToonsAdapter adapter = (ToonsAdapter) binding.recMain.getAdapter();
+
+        if(adapter == null) return super.onOptionsItemSelected(menuItem);
+
+        ToonsAdapter.SortManager sortManager = adapter.getSortManager();
+
+        if(menuItem.getItemId() == R.id.action_sort_alphabet) {
+            boolean isAlphabet = sortManager.isSortedByAlphabet();
+            if (isAlphabet && sortManager.isAscending()) {
+                sortManager.setSortDirection(ToonsAdapter.SortDirection.DESCENDING);
+                adapter.sortData(Comparator.comparing((ToonsContainer t) -> t.toonName.toLowerCase(Locale.ROOT)).reversed());
+            } else {
+                if (!isAlphabet) sortManager.setSortType(ToonsAdapter.SortType.ALPHABET);
+                sortManager.setSortDirection(ToonsAdapter.SortDirection.ASCENDING);
+                adapter.sortData(Comparator.comparing(t -> t.toonName.toLowerCase(Locale.ROOT)));
+            }
+            return true;
+        } else if(menuItem.getItemId() == R.id.action_sort_release) {
+            boolean isRelease = sortManager.isSortedByReleaseDay();
+            if (isRelease && sortManager.isAscending()) {
+                sortManager.setSortDirection(ToonsAdapter.SortDirection.DESCENDING);
+                adapter.sortData(Comparator.comparingInt(ToonsContainer::getFirstReleaseDay).reversed());
+            } else {
+                if (!isRelease) sortManager.setSortType(ToonsAdapter.SortType.RELEASEDAY);
+                sortManager.setSortDirection(ToonsAdapter.SortDirection.ASCENDING);
+                adapter.sortData(Comparator.comparingInt(ToonsContainer::getFirstReleaseDay));
+            }
+            return true;
+        } else if(menuItem.getItemId() == R.id.action_sort_fifo) {
+            boolean isFIFO = sortManager.isSortedByFIFO();
+            if (isFIFO && sortManager.isAscending()) {
+                sortManager.setSortDirection(ToonsAdapter.SortDirection.DESCENDING);
+                adapter.sortData(Comparator.comparing((ToonsContainer t) -> t.dbID).reversed());
+            } else {
+                if (!isFIFO) sortManager.setSortType(ToonsAdapter.SortType.FIFO);
+                sortManager.setSortDirection(ToonsAdapter.SortDirection.ASCENDING);
+                adapter.sortData(Comparator.comparing(t -> t.dbID));
+            }
+            return true;
+        } else {
+            return super.onOptionsItemSelected(menuItem);
+        }
     }
 
     public interface ClickListener {
