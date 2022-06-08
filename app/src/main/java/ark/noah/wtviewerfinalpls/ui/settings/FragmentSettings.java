@@ -61,6 +61,8 @@ public class FragmentSettings extends Fragment {
         binding = FragmentSettingsBinding.inflate(inflater, container, false);
         dbHelper = new DBHelper(requireContext());
 
+        Context activityContext = requireContext();
+
         dumpSaveActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if(result.getResultCode() == Activity.RESULT_OK) {
                 Intent intent = result.getData();
@@ -70,7 +72,7 @@ public class FragmentSettings extends Fragment {
                 if(uri == null) return;
 
                 try {
-                    ParcelFileDescriptor pfd = requireContext().getContentResolver().
+                    ParcelFileDescriptor pfd = activityContext.getContentResolver().
                             openFileDescriptor(uri, "w");
                     FileOutputStream fileOutputStream =
                             new FileOutputStream(pfd.getFileDescriptor());
@@ -83,6 +85,8 @@ public class FragmentSettings extends Fragment {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+                Toast.makeText(activityContext.getApplicationContext(), activityContext.getText(R.string.notif_backup), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -96,7 +100,7 @@ public class FragmentSettings extends Fragment {
 
                 try {
                     InputStream inputStream =
-                            requireContext().getContentResolver().openInputStream(uri);
+                            activityContext.getContentResolver().openInputStream(uri);
                     BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
                     StringBuilder lines = new StringBuilder();
                     String line;
@@ -110,10 +114,11 @@ public class FragmentSettings extends Fragment {
                 } catch(IOException e) {
                     e.printStackTrace();
                 }
+
+                Toast.makeText(activityContext.getApplicationContext(), activityContext.getText(R.string.notif_restore), Toast.LENGTH_SHORT).show();
             }
         });
 
-        Context activityContext = requireContext();
         SharedPreferences sharedPreferences = activityContext.getSharedPreferences(getString(R.string.shared_pref_key),
                 Context.MODE_PRIVATE);
 
