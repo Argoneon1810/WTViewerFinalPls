@@ -36,7 +36,7 @@ public class ViewerAdapter extends BaseAdapter {
 
         TypedValue value = new TypedValue();
         context.getTheme().resolveAttribute(android.R.attr.textColorSecondary, value, true);
-        BlendModeColorFilter greyColorFilter = new BlendModeColorFilter(Color.toArgb(value.data), BlendMode.SRC_ATOP);
+        BlendModeColorFilter greyColorFilter = new BlendModeColorFilter(value.data, BlendMode.SRC_ATOP);
         ic_loading.setColorFilter(greyColorFilter);
         ic_empty.setColorFilter(greyColorFilter);
         ic_error.setColorFilter(greyColorFilter);
