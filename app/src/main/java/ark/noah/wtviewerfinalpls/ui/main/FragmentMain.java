@@ -180,18 +180,13 @@ public class FragmentMain extends Fragment {
             m.setOptionalIconsVisible(true);
             for (int i = 0; i < menu.size(); ++i) {
                 menu.getItem(i).setIconTintBlendMode(BlendMode.SRC_ATOP);
-
-                SpannableString spannableString = new SpannableString(menu.getItem(i).getTitle());
-                spannableString.setSpan(new ForegroundColorSpan(blackColorFilter.getColor()), 0, spannableString.length(), 0);
-                menu.getItem(i).setTitle(spannableString);
+                applyThemeToMenuItem(menu.getItem(i));
 
                 Menu subMenu = menu.getItem(i).getSubMenu();
+                if(subMenu == null) continue;
                 for(int j = 0; j < subMenu.size(); ++j) {
                     subMenu.getItem(j).setIconTintBlendMode(BlendMode.SRC_ATOP);
-
-                    SpannableString spannableString2 = new SpannableString(subMenu.getItem(j).getTitle());
-                    spannableString2.setSpan(new ForegroundColorSpan(blackColorFilter.getColor()), 0, spannableString2.length(), 0);
-                    subMenu.getItem(j).setTitle(spannableString2);
+                    applyThemeToMenuItem(subMenu.getItem(j));
                 }
             }
         }
@@ -202,25 +197,29 @@ public class FragmentMain extends Fragment {
         ToonsAdapter adapter = (ToonsAdapter) binding.recMain.getAdapter();
         if(adapter == null) return;
 
-        if(!adapter.isResorted()) return;
-
         ToonsAdapter.SortManager sortManager = adapter.getSortManager();
-        Menu nestedMenu = menu.getItem(0).getSubMenu();
-        for (int i = 0; i < nestedMenu.size(); ++i) {
-            MenuItem subItem = nestedMenu.getItem(i);
-            if(subItem.getItemId() == R.id.action_sort_fifo)
-                if(sortManager.isSortedByFIFO())
-                    if(sortManager.isAscending()) subItem.setIcon(ic_down); else subItem.setIcon(ic_up);
+
+        Log.wtf("", "onPrepareOptionsMenu: sortManager status: " + sortManager.toString());
+
+        for (int i = 0; i < menu.size(); ++i) {
+            Menu nestedMenu = menu.getItem(i).getSubMenu();
+            if(nestedMenu == null) continue;
+            for (int j = 0; j < nestedMenu.size(); ++j) {
+                MenuItem subItem = nestedMenu.getItem(j);
+                if(subItem.getItemId() == R.id.action_sort_fifo)
+                    if(sortManager.isSortedByFIFO())
+                        if(sortManager.isAscending()) subItem.setIcon(ic_down); else subItem.setIcon(ic_up);
+                    else subItem.setIcon(null);
+                else if(subItem.getItemId() == R.id.action_sort_alphabet)
+                    if(sortManager.isSortedByAlphabet())
+                        if(sortManager.isAscending()) subItem.setIcon(ic_down); else subItem.setIcon(ic_up);
+                    else subItem.setIcon(null);
+                else if(subItem.getItemId() == R.id.action_sort_release)
+                    if(sortManager.isSortedByReleaseDay())
+                        if(sortManager.isAscending()) subItem.setIcon(ic_down); else subItem.setIcon(ic_up);
+                    else subItem.setIcon(null);
                 else subItem.setIcon(null);
-            else if(subItem.getItemId() == R.id.action_sort_alphabet)
-                if(sortManager.isSortedByAlphabet())
-                    if(sortManager.isAscending()) subItem.setIcon(ic_down); else subItem.setIcon(ic_up);
-                else subItem.setIcon(null);
-            else if(subItem.getItemId() == R.id.action_sort_release)
-                if(sortManager.isSortedByReleaseDay())
-                    if(sortManager.isAscending()) subItem.setIcon(ic_down); else subItem.setIcon(ic_up);
-                else subItem.setIcon(null);
-            else subItem.setIcon(null);
+            }
         }
     }
 
@@ -232,7 +231,10 @@ public class FragmentMain extends Fragment {
 
         ToonsAdapter.SortManager sortManager = adapter.getSortManager();
 
-        if(menuItem.getItemId() == R.id.action_sort_alphabet) {
+        if(menuItem.getItemId() == R.id.action_showhide) {
+            showHideHidden(adapter, menuItem);
+            return true;
+        } else if(menuItem.getItemId() == R.id.action_sort_alphabet) {
             sortByAlphabet(adapter, sortManager);
             return true;
         } else if(menuItem.getItemId() == R.id.action_sort_release) {
@@ -306,8 +308,6 @@ public class FragmentMain extends Fragment {
     }
     private void sortByFIFO(ToonsAdapter adapter, ToonsAdapter.SortManager sortManager) {
         boolean isFIFO = sortManager.isSortedByFIFO();
-        Log.i("", "dir value in sharedpref before setting: " + sharedPreferences.getInt(getString(R.string.shared_pref_sort_direction_key), -1));
-        Log.i("", "type value in sharedpref before setting: " + sharedPreferences.getString(getString(R.string.shared_pref_sort_type_key), "failed"));
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(getString(R.string.shared_pref_sort_type_key), getString(R.string.action_sort_fifo));
         if (isFIFO && sortManager.isAscending()) {
@@ -321,8 +321,28 @@ public class FragmentMain extends Fragment {
             adapter.sortData(Comparator.comparing(t -> t.dbID));
         }
         editor.apply();
-        Log.i("", "dir value in sharedpref after setting: " + sharedPreferences.getInt(getString(R.string.shared_pref_sort_direction_key), -1));
-        Log.i("", "type value in sharedpref after setting: " + sharedPreferences.getString(getString(R.string.shared_pref_sort_type_key), "failed"));
+    }
+
+    private void showHideHidden(ToonsAdapter adapter, MenuItem menuItem) {
+        if(adapter.isHiding()) {
+            adapter.showHidden();
+            if(menuItem != null)
+                menuItem.setTitle(requireContext().getString(R.string.action_hide_hidden));
+        }
+        else {
+            adapter.hideHidden();
+            if(menuItem != null)
+                menuItem.setTitle(requireContext().getString(R.string.action_show_hidden));
+        }
+        if(menuItem != null)
+            applyThemeToMenuItem(menuItem);
+        sortAdapterBySharedPreference();
+    }
+
+    private void applyThemeToMenuItem(MenuItem menuItem) {
+        SpannableString spannableString = new SpannableString(menuItem.getTitle());
+        spannableString.setSpan(new ForegroundColorSpan(blackColorFilter.getColor()), 0, spannableString.length(), 0);
+        menuItem.setTitle(spannableString);
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -343,6 +363,8 @@ public class FragmentMain extends Fragment {
         ArrayList<ToonsContainer> mList = dbHelper.getAllToons();
         ToonsAdapter adapter = new ToonsAdapter(mList);
         binding.recMain.setAdapter(adapter);
+
+        showHideHidden(adapter, null);
 
         binding.recMain.addOnItemTouchListener(new RecyclerTouchListener(requireContext().getApplicationContext(), binding.recMain, new ClickListener() {
             @Override
@@ -366,9 +388,27 @@ public class FragmentMain extends Fragment {
                 PopupMenu popupMenu = new PopupMenu(requireContext(), view, Gravity.END);
 
                 popupMenu.getMenuInflater().inflate(R.menu.main_popup, popupMenu.getMenu());
+
+                Menu menu = popupMenu.getMenu();
+                for (int i = 0; i < menu.size(); ++i) {
+                    if(menu.getItem(i).getItemId() == R.id.action_showhidepopup) {
+                        if(adapter.getItemAtPosition(position).hide)
+                            menu.getItem(i).setTitle(R.string.action_set_show);
+                        else
+                            menu.getItem(i).setTitle(R.string.action_set_hide);
+                        break;
+                    }
+                }
+
                 popupMenu.setOnMenuItemClickListener(menuItem -> {
-                    ToonsContainer currentItem = mList.get(position);
-                    if(menuItem.getTitle().equals(requireContext().getText(R.string.menu_delete))) {
+                    ToonsContainer currentItem = adapter.getmData().get(position);
+                    if (menuItem.getTitle().equals(requireContext().getText(R.string.action_set_hide))) {
+                        adapter.hideSingle(position);
+                        dbHelper.editToonContent(adapter.getItemAtPosition(position));
+                    } else if (menuItem.getTitle().equals(requireContext().getText(R.string.action_set_show))) {
+                        adapter.getItemAtPosition(position).hide = false;
+                        dbHelper.editToonContent(adapter.getItemAtPosition(position));
+                    } else if(menuItem.getTitle().equals(requireContext().getText(R.string.menu_delete))) {
                         dbHelper.deleteToonContent(adapter.deleteItemAndGetIDOFDeleted(currentItem));
                     } else if (menuItem.getTitle().equals(requireContext().getText(R.string.menu_edit))) {
                         FragmentMainDirections.ActionNavMainToFragmentEdit action =
@@ -395,7 +435,6 @@ public class FragmentMain extends Fragment {
         if(sortdir == DESCENDING) sortManager.setSortDirection(ToonsAdapter.SortDirection.DESCENDING);
         else sortManager.setSortDirection(ToonsAdapter.SortDirection.ASCENDING);
 
-        Log.i("", sorttype);
         if(sorttype.equals(getString(R.string.action_sort_alphabet))) {
             sortManager.setSortType(ToonsAdapter.SortType.ALPHABET);
             sortByAlphabet(adapter, sortManager, true);

@@ -26,6 +26,7 @@ public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> 
     private SortManager sortManager;
 
     private boolean bResorted = true;
+    private boolean bHiding = false;
 
     class ViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
@@ -62,6 +63,11 @@ public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> 
 
         public boolean isAscending() { return sortDirection == SortDirection.ASCENDING; }
         public void setSortDirection(SortDirection dir) { sortDirection = dir; }
+
+        @NonNull
+        public String toString() {
+            return sortType.toString() + " " + sortDirection.toString();
+        }
     }
 
     public ToonsAdapter(ArrayList<ToonsContainer> list) {
@@ -185,6 +191,7 @@ public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> 
     }
 
     public void showHidden() {
+        bHiding = false;
         mData.clear();
         mData = null;
         mData = new ArrayList<>(mDataVanilla);
@@ -192,10 +199,23 @@ public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> 
     }
 
     public void hideHidden() {
+        bHiding = true;
         for (int i = mData.size() - 1; i >= 0 ; --i) {
             if(mData.get(i).hide)
                 mData.remove(i);
         }
         notifyDataSetChanged();
+    }
+
+    public boolean isHiding() {
+        return bHiding;
+    }
+
+    public void hideSingle(int index) {
+        mData.get(index).hide = true;
+        if(bHiding) {
+            mData.remove(index);
+            notifyItemRemoved(index);
+        }
     }
 }

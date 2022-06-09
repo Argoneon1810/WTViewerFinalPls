@@ -13,6 +13,11 @@
     <string name="action_sort_alphabet">Alphabet</string>
     <string name="action_sort_release">Release Day</string>
 
+    <string name="action_show_hidden">Show Hidden</string>
+    <string name="action_hide_hidden">Hide Hidden</string>
+    <string name="action_set_hide">Set Hidden</string>
+    <string name="action_set_show">Set Shown</string>
+
     <string name="menu_edit">Edit</string>
     <string name="menu_delete">Delete</string>
 

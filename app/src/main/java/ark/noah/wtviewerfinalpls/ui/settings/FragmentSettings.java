@@ -78,7 +78,6 @@ public class FragmentSettings extends Fragment {
                             new FileOutputStream(pfd.getFileDescriptor());
                     StringBuilder dumpBuilder = new StringBuilder();
                     DatabaseUtils.dumpCursor(dbHelper.loadDBCursorToons(), dumpBuilder);
-                    Log.i("", dumpBuilder.toString());
                     fileOutputStream.write(dumpBuilder.toString().getBytes(StandardCharsets.UTF_8));
                     fileOutputStream.close();
                     pfd.close();
