@@ -9,6 +9,8 @@ import android.graphics.BlendModeColorFilter;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.GestureDetector;
@@ -132,6 +134,19 @@ public class FragmentMain extends Fragment {
             m.setOptionalIconsVisible(true);
             for (int i = 0; i < menu.size(); ++i) {
                 menu.getItem(i).setIconTintBlendMode(BlendMode.SRC_ATOP);
+
+                SpannableString spannableString = new SpannableString(menu.getItem(i).getTitle());
+                spannableString.setSpan(new ForegroundColorSpan(blackColorFilter.getColor()), 0, spannableString.length(), 0);
+                menu.getItem(i).setTitle(spannableString);
+
+                Menu subMenu = menu.getItem(i).getSubMenu();
+                for(int j = 0; j < subMenu.size(); ++j) {
+                    subMenu.getItem(j).setIconTintBlendMode(BlendMode.SRC_ATOP);
+
+                    SpannableString spannableString2 = new SpannableString(subMenu.getItem(j).getTitle());
+                    spannableString2.setSpan(new ForegroundColorSpan(blackColorFilter.getColor()), 0, spannableString2.length(), 0);
+                    subMenu.getItem(j).setTitle(spannableString);
+                }
             }
         }
     }
@@ -317,7 +332,7 @@ public class FragmentMain extends Fragment {
         ic_down = requireContext().getDrawable(R.drawable.ic_baseline_arrow_drop_down_24).mutate();
 
         TypedValue value = new TypedValue();
-        requireContext().getTheme().resolveAttribute(R.attr.colorOnSecondary, value, true);
+        requireContext().getTheme().resolveAttribute(R.attr.colorOnPrimaryReversed, value, true);
         @ColorInt int fontColorInt = value.data;
         blackColorFilter = new BlendModeColorFilter(fontColorInt, BlendMode.SRC_ATOP);
 

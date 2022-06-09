@@ -2,4 +2,5 @@
 <resources>
     <attr name="CardBackgroundThemed" format="reference" />
     <attr name="IconColorThemed" format="reference" />
+    <attr name="colorOnPrimaryReversed" format="reference" />
 </resources>

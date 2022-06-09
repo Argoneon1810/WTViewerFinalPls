@@ -14,5 +14,7 @@
         <!-- Customize your theme here. -->
         <item name="CardBackgroundThemed">@color/cardview_dark_background</item>
         <item name="IconColorThemed">@color/grey_dark</item>
+        <item name="android:actionMenuTextColor">@color/white</item>
+        <item name="colorOnPrimaryReversed">@color/white</item>
     </style>
 </resources>
