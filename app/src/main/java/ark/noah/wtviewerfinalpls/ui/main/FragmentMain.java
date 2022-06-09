@@ -3,11 +3,13 @@ package ark.noah.wtviewerfinalpls.ui.main;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BlendMode;
 import android.graphics.BlendModeColorFilter;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -48,10 +50,14 @@ public class FragmentMain extends Fragment {
     private FragmentMainBinding binding;
     private DBHelper dbHelper;
 
+    SharedPreferences sharedPreferences;
+
     Drawable ic_up, ic_down;
     BlendModeColorFilter blackColorFilter;
 
-    @SuppressLint("UseCompatLoadingForDrawables")
+    private static final int ASCENDING = 0;
+    private static final int DESCENDING = 1;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel =
@@ -62,58 +68,13 @@ public class FragmentMain extends Fragment {
 
         dbHelper = new DBHelper(requireContext());
 
-        ic_up = requireContext().getDrawable(R.drawable.ic_baseline_arrow_drop_up_24).mutate();
-        ic_down = requireContext().getDrawable(R.drawable.ic_baseline_arrow_drop_down_24).mutate();
+        sharedPreferences = requireContext().getSharedPreferences(getString(R.string.shared_pref_key),
+                Context.MODE_PRIVATE);
 
-        TypedValue value = new TypedValue();
-        requireContext().getTheme().resolveAttribute(R.attr.colorOnSecondary, value, true);
-        @ColorInt int fontColorInt = value.data;
-        blackColorFilter = new BlendModeColorFilter(fontColorInt, BlendMode.SRC_ATOP);
+        prepareIcon();
+        prepareRecycler();
 
-        ic_up.setColorFilter(blackColorFilter);
-        ic_down.setColorFilter(blackColorFilter);
-
-        ArrayList<ToonsContainer> mList = dbHelper.getAllToons();
-        ToonsAdapter adapter = new ToonsAdapter(mList);
-        binding.recMain.setAdapter(adapter);
-
-        binding.recMain.addOnItemTouchListener(new RecyclerTouchListener(requireContext().getApplicationContext(), binding.recMain, new ClickListener() {
-            @Override
-            public void onClick(View view, int position) {
-                if(EntryPointGetter.getLastValidEntryPoint().equals("")) {
-                    Toast.makeText(requireContext().getApplicationContext(), requireContext().getText(R.string.notif_link_not_ready), Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if(!WtwtLinkParser.isWebToon(adapter.getItemAtPosition(position).toonType)) {
-                    Toast.makeText(requireContext().getApplicationContext(), requireContext().getText(R.string.notif_is_not_webtoon), Toast.LENGTH_LONG).show();
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(WtwtLinkParser.rebuildLinkEpisodes(adapter.getItemAtPosition(position))));
-                    startActivity(browserIntent);
-                    return;
-                }
-                FragmentMainDirections.ActionNavMainToFragmentEpisodes action = FragmentMainDirections.actionNavMainToFragmentEpisodes(adapter.getItemAtPosition(position));
-                Navigation.findNavController(view).navigate(action);
-            }
-
-            @Override
-            public void onLongClick(View view, int position) {
-                PopupMenu popupMenu = new PopupMenu(requireContext(), view, Gravity.END);
-
-                popupMenu.getMenuInflater().inflate(R.menu.main_popup, popupMenu.getMenu());
-                popupMenu.setOnMenuItemClickListener(menuItem -> {
-                    ToonsContainer currentItem = mList.get(position);
-                    if(menuItem.getTitle().equals(requireContext().getText(R.string.menu_delete))) {
-                        dbHelper.deleteToonContent(adapter.deleteItemAndGetIDOFDeleted(currentItem));
-                    } else if (menuItem.getTitle().equals(requireContext().getText(R.string.menu_edit))) {
-                        FragmentMainDirections.ActionNavMainToFragmentEdit action =
-                                FragmentMainDirections.actionNavMainToFragmentEdit(adapter.getItemAtPosition(position));
-                        Navigation.findNavController(view).navigate(action);
-                    }
-                    return false;
-                });
-
-                popupMenu.show();
-            }
-        }));
+        sortAdapterBySharedPreference();
 
         setHasOptionsMenu(true);
 
@@ -211,37 +172,13 @@ public class FragmentMain extends Fragment {
         ToonsAdapter.SortManager sortManager = adapter.getSortManager();
 
         if(menuItem.getItemId() == R.id.action_sort_alphabet) {
-            boolean isAlphabet = sortManager.isSortedByAlphabet();
-            if (isAlphabet && sortManager.isAscending()) {
-                sortManager.setSortDirection(ToonsAdapter.SortDirection.DESCENDING);
-                adapter.sortData(Comparator.comparing((ToonsContainer t) -> t.toonName.toLowerCase(Locale.ROOT)).reversed());
-            } else {
-                if (!isAlphabet) sortManager.setSortType(ToonsAdapter.SortType.ALPHABET);
-                sortManager.setSortDirection(ToonsAdapter.SortDirection.ASCENDING);
-                adapter.sortData(Comparator.comparing(t -> t.toonName.toLowerCase(Locale.ROOT)));
-            }
+            sortByAlphabet(adapter, sortManager);
             return true;
         } else if(menuItem.getItemId() == R.id.action_sort_release) {
-            boolean isRelease = sortManager.isSortedByReleaseDay();
-            if (isRelease && sortManager.isAscending()) {
-                sortManager.setSortDirection(ToonsAdapter.SortDirection.DESCENDING);
-                adapter.sortData(Comparator.comparingInt(ToonsContainer::getFirstReleaseDay).reversed());
-            } else {
-                if (!isRelease) sortManager.setSortType(ToonsAdapter.SortType.RELEASEDAY);
-                sortManager.setSortDirection(ToonsAdapter.SortDirection.ASCENDING);
-                adapter.sortData(Comparator.comparingInt(ToonsContainer::getFirstReleaseDay));
-            }
+            sortByRelease(adapter, sortManager);
             return true;
         } else if(menuItem.getItemId() == R.id.action_sort_fifo) {
-            boolean isFIFO = sortManager.isSortedByFIFO();
-            if (isFIFO && sortManager.isAscending()) {
-                sortManager.setSortDirection(ToonsAdapter.SortDirection.DESCENDING);
-                adapter.sortData(Comparator.comparing((ToonsContainer t) -> t.dbID).reversed());
-            } else {
-                if (!isFIFO) sortManager.setSortType(ToonsAdapter.SortType.FIFO);
-                sortManager.setSortDirection(ToonsAdapter.SortDirection.ASCENDING);
-                adapter.sortData(Comparator.comparing(t -> t.dbID));
-            }
+            sortByFIFO(adapter, sortManager);
             return true;
         } else {
             return super.onOptionsItemSelected(menuItem);
@@ -255,7 +192,6 @@ public class FragmentMain extends Fragment {
     }
 
     public static class RecyclerTouchListener implements RecyclerView.OnItemTouchListener {
-
         private GestureDetector gestureDetector;
         private ClickListener clickListener;
 
@@ -292,6 +228,171 @@ public class FragmentMain extends Fragment {
 
         @Override
         public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+        }
+    }
+
+
+    private void sortByAlphabet(ToonsAdapter adapter, ToonsAdapter.SortManager sortManager, boolean reverse) {
+        if(!reverse) sortByAlphabet(adapter, sortManager);
+
+        if(sortManager.isAscending()) sortManager.setSortDirection(ToonsAdapter.SortDirection.DESCENDING);
+        else sortManager.setSortDirection(ToonsAdapter.SortDirection.ASCENDING);
+
+        sortByAlphabet(adapter, sortManager);
+    }
+    private void sortByAlphabet(ToonsAdapter adapter, ToonsAdapter.SortManager sortManager) {
+        boolean isAlphabet = sortManager.isSortedByAlphabet();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(getString(R.string.shared_pref_sort_type_key), getString(R.string.action_sort_alphabet));
+        if (isAlphabet && sortManager.isAscending()) {
+            sortManager.setSortDirection(ToonsAdapter.SortDirection.DESCENDING);
+            adapter.sortData(Comparator.comparing((ToonsContainer t) -> t.toonName.toLowerCase(Locale.ROOT)).reversed());
+            editor.putInt(getString(R.string.shared_pref_sort_direction_key), DESCENDING);
+        } else {
+            if (!isAlphabet) sortManager.setSortType(ToonsAdapter.SortType.ALPHABET);
+            sortManager.setSortDirection(ToonsAdapter.SortDirection.ASCENDING);
+            adapter.sortData(Comparator.comparing(t -> t.toonName.toLowerCase(Locale.ROOT)));
+            editor.putInt(getString(R.string.shared_pref_sort_direction_key), ASCENDING);
+        }
+        editor.apply();
+    }
+
+    private void sortByRelease(ToonsAdapter adapter, ToonsAdapter.SortManager sortManager, boolean reverse) {
+        if(!reverse) sortByRelease(adapter, sortManager);
+
+        if(sortManager.isAscending()) sortManager.setSortDirection(ToonsAdapter.SortDirection.DESCENDING);
+        else sortManager.setSortDirection(ToonsAdapter.SortDirection.ASCENDING);
+
+        sortByRelease(adapter, sortManager);
+    }
+    private void sortByRelease(ToonsAdapter adapter, ToonsAdapter.SortManager sortManager) {
+        boolean isRelease = sortManager.isSortedByReleaseDay();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(getString(R.string.shared_pref_sort_type_key), getString(R.string.action_sort_release));
+        if (isRelease && sortManager.isAscending()) {
+            sortManager.setSortDirection(ToonsAdapter.SortDirection.DESCENDING);
+            editor.putInt(getString(R.string.shared_pref_sort_direction_key), DESCENDING);
+            adapter.sortData(Comparator.comparingInt(ToonsContainer::getFirstReleaseDay).reversed());
+        } else {
+            if (!isRelease) sortManager.setSortType(ToonsAdapter.SortType.RELEASEDAY);
+            sortManager.setSortDirection(ToonsAdapter.SortDirection.ASCENDING);
+            editor.putInt(getString(R.string.shared_pref_sort_direction_key), ASCENDING);
+            adapter.sortData(Comparator.comparingInt(ToonsContainer::getFirstReleaseDay));
+        }
+        editor.apply();
+    }
+
+    private void sortByFIFO(ToonsAdapter adapter, ToonsAdapter.SortManager sortManager, boolean reverse) {
+        if(!reverse) sortByFIFO(adapter, sortManager);
+
+        if(sortManager.isAscending()) sortManager.setSortDirection(ToonsAdapter.SortDirection.DESCENDING);
+        else sortManager.setSortDirection(ToonsAdapter.SortDirection.ASCENDING);
+
+        sortByFIFO(adapter, sortManager);
+    }
+    private void sortByFIFO(ToonsAdapter adapter, ToonsAdapter.SortManager sortManager) {
+        boolean isFIFO = sortManager.isSortedByFIFO();
+        Log.i("", "dir value in sharedpref before setting: " + sharedPreferences.getInt(getString(R.string.shared_pref_sort_direction_key), -1));
+        Log.i("", "type value in sharedpref before setting: " + sharedPreferences.getString(getString(R.string.shared_pref_sort_type_key), "failed"));
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(getString(R.string.shared_pref_sort_type_key), getString(R.string.action_sort_fifo));
+        if (isFIFO && sortManager.isAscending()) {
+            sortManager.setSortDirection(ToonsAdapter.SortDirection.DESCENDING);
+            editor.putInt(getString(R.string.shared_pref_sort_direction_key), DESCENDING);
+            adapter.sortData(Comparator.comparing((ToonsContainer t) -> t.dbID).reversed());
+        } else {
+            if (!isFIFO) sortManager.setSortType(ToonsAdapter.SortType.FIFO);
+            sortManager.setSortDirection(ToonsAdapter.SortDirection.ASCENDING);
+            editor.putInt(getString(R.string.shared_pref_sort_direction_key), ASCENDING);
+            adapter.sortData(Comparator.comparing(t -> t.dbID));
+        }
+        editor.apply();
+        Log.i("", "dir value in sharedpref after setting: " + sharedPreferences.getInt(getString(R.string.shared_pref_sort_direction_key), -1));
+        Log.i("", "type value in sharedpref after setting: " + sharedPreferences.getString(getString(R.string.shared_pref_sort_type_key), "failed"));
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private void prepareIcon() {
+        ic_up = requireContext().getDrawable(R.drawable.ic_baseline_arrow_drop_up_24).mutate();
+        ic_down = requireContext().getDrawable(R.drawable.ic_baseline_arrow_drop_down_24).mutate();
+
+        TypedValue value = new TypedValue();
+        requireContext().getTheme().resolveAttribute(R.attr.colorOnSecondary, value, true);
+        @ColorInt int fontColorInt = value.data;
+        blackColorFilter = new BlendModeColorFilter(fontColorInt, BlendMode.SRC_ATOP);
+
+        ic_up.setColorFilter(blackColorFilter);
+        ic_down.setColorFilter(blackColorFilter);
+    }
+
+    private void prepareRecycler() {
+        ArrayList<ToonsContainer> mList = dbHelper.getAllToons();
+        ToonsAdapter adapter = new ToonsAdapter(mList);
+        binding.recMain.setAdapter(adapter);
+
+        binding.recMain.addOnItemTouchListener(new RecyclerTouchListener(requireContext().getApplicationContext(), binding.recMain, new ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                if(EntryPointGetter.getLastValidEntryPoint().equals("")) {
+                    Toast.makeText(requireContext().getApplicationContext(), requireContext().getText(R.string.notif_link_not_ready), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if(!WtwtLinkParser.isWebToon(adapter.getItemAtPosition(position).toonType)) {
+                    Toast.makeText(requireContext().getApplicationContext(), requireContext().getText(R.string.notif_is_not_webtoon), Toast.LENGTH_LONG).show();
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(WtwtLinkParser.rebuildLinkEpisodes(adapter.getItemAtPosition(position))));
+                    startActivity(browserIntent);
+                    return;
+                }
+                FragmentMainDirections.ActionNavMainToFragmentEpisodes action = FragmentMainDirections.actionNavMainToFragmentEpisodes(adapter.getItemAtPosition(position));
+                Navigation.findNavController(view).navigate(action);
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+                PopupMenu popupMenu = new PopupMenu(requireContext(), view, Gravity.END);
+
+                popupMenu.getMenuInflater().inflate(R.menu.main_popup, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(menuItem -> {
+                    ToonsContainer currentItem = mList.get(position);
+                    if(menuItem.getTitle().equals(requireContext().getText(R.string.menu_delete))) {
+                        dbHelper.deleteToonContent(adapter.deleteItemAndGetIDOFDeleted(currentItem));
+                    } else if (menuItem.getTitle().equals(requireContext().getText(R.string.menu_edit))) {
+                        FragmentMainDirections.ActionNavMainToFragmentEdit action =
+                                FragmentMainDirections.actionNavMainToFragmentEdit(adapter.getItemAtPosition(position));
+                        Navigation.findNavController(view).navigate(action);
+                    }
+                    return false;
+                });
+
+                popupMenu.show();
+            }
+        }));
+    }
+
+    private void sortAdapterBySharedPreference() {
+        String sorttype = sharedPreferences.getString(getString(R.string.shared_pref_sort_type_key), getString(R.string.action_sort_fifo));
+        int sortdir = sharedPreferences.getInt(getString(R.string.shared_pref_sort_direction_key), ASCENDING);
+
+        ToonsAdapter adapter = (ToonsAdapter)binding.recMain.getAdapter();
+        if(adapter == null) return;
+
+        ToonsAdapter.SortManager sortManager = adapter.getSortManager();
+
+        if(sortdir == DESCENDING) sortManager.setSortDirection(ToonsAdapter.SortDirection.DESCENDING);
+        else sortManager.setSortDirection(ToonsAdapter.SortDirection.ASCENDING);
+
+        Log.i("", sorttype);
+        if(sorttype.equals(getString(R.string.action_sort_alphabet))) {
+            sortManager.setSortType(ToonsAdapter.SortType.ALPHABET);
+            sortByAlphabet(adapter, sortManager, true);
+        }
+        else if(sorttype.equals(getString(R.string.action_sort_release))) {
+            sortManager.setSortType(ToonsAdapter.SortType.RELEASEDAY);
+            sortByRelease(adapter, sortManager, true);
+        }
+        /*if(sorttype.equals(getString(R.string.action_sort_fifo)))*/ else {
+            sortManager.setSortType(ToonsAdapter.SortType.FIFO);
+            sortByFIFO(adapter, sortManager, true);
         }
     }
 }

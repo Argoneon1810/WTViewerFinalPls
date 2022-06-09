@@ -27,6 +27,8 @@
 
     <string name="shared_pref_key">sharedpreffragmain</string>
     <string name="shared_pref_entry_key">entrypoint</string>
+    <string name="shared_pref_sort_type_key">sorttype</string>
+    <string name="shared_pref_sort_direction_key">sortdirection</string>
 
     <string name="day_sun_short">SUN</string>
     <string name="day_mon_short">MON</string>
