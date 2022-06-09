@@ -34,6 +34,7 @@ public class DBDumpParser {
         int toonid_index = value.indexOf(DBHelper.COL_TOONID);
         int epiid_index = value.indexOf(DBHelper.COL_EPIID);
         int release_index = value.indexOf(DBHelper.COL_RELEASEDAY);
+        int hide_index = value.indexOf(DBHelper.COL_HIDE);
 
         String titleSub = value.substring(title_index, type_index-1);
         titleSub = titleSub.substring(titleSub.indexOf("=")+1).trim();
@@ -51,10 +52,14 @@ public class DBDumpParser {
         epiidSub = epiidSub.substring(epiidSub.indexOf("=")+1).trim();
         int epiid = Integer.parseInt(epiidSub);
 
-        String releaseSub = value.substring(release_index);
+        String releaseSub = value.substring(release_index, hide_index-1);
         releaseSub = releaseSub.substring(releaseSub.indexOf("=")+1).trim();
         int release = Integer.parseInt(releaseSub);
 
-        return new ToonsContainer(-1, title, type, toonid, epiid, release);
+        String hideSub = value.substring(hide_index);
+        hideSub = hideSub.substring(hideSub.indexOf("=")+1).trim();
+        boolean hide = Integer.parseInt(hideSub) != 0;
+
+        return new ToonsContainer(-1, title, type, toonid, epiid, release, hide);
     }
 }

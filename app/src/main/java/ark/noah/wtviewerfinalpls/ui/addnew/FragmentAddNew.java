@@ -74,10 +74,11 @@ public class FragmentAddNew extends Fragment{
             for (int i = 0; i < urls.length; ++i) {
                 adapter.addNewItem(
                         String.format(requireContext().getString(R.string.item_placeholder), i),
-                        0,
+                        toonTypes[i],
                         toonIDs[i],
                         episodeIDs[i],
-                        toonTypes[i]
+                        0,
+                        false
                 );
             }
         }
