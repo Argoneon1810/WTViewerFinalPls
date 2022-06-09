@@ -16,11 +16,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
+import java.util.List;
 
 import ark.noah.wtviewerfinalpls.R;
 
 public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> {
     private ArrayList<ToonsContainer> mData;
+    private ArrayList<ToonsContainer> mDataVanilla;
     private SortManager sortManager;
 
     private boolean bResorted = true;
@@ -64,6 +66,7 @@ public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> 
 
     public ToonsAdapter(ArrayList<ToonsContainer> list) {
         mData = list;
+        mDataVanilla = new ArrayList<>(list);
         sortManager = new SortManager();
     }
 
@@ -119,19 +122,29 @@ public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> 
         int id = target.dbID;
         int posToUpdate = mData.indexOf(target);
         mData.remove(target);
+        mDataVanilla.remove(target);
         notifyItemRemoved(posToUpdate);
         return id;
     }
 
     public void updateItem(ToonsContainer updated) {
-        for (int i = 0; i < mData.size(); ++i) {
-            if(updated.dbID == mData.get(i).dbID) {
-                mData.remove(i);
-                mData.add(i, updated);
-                notifyItemChanged(i);
-                break;
+        notifyItemChanged(updateItem(mData, updated));
+//        updateItem(mDataVanilla, updated);    // ToonsContainer is an instance, therefore second update isnt necessary
+    }
+    private int updateItem(ArrayList<ToonsContainer> containers, ToonsContainer updated) {
+        for(int i = 0; i < containers.size(); ++i) {
+            if(updated.dbID == containers.get(i).dbID) {
+                ToonsContainer target = containers.get(i);
+                target.toonName = updated.toonName;
+                target.toonType = updated.toonType;
+                target.toonID = updated.toonID;
+                target.episodeID = updated.episodeID;
+                target.releaseWeekdays = updated.releaseWeekdays;
+                target.hide = updated.hide;
+                return i;
             }
         }
+        return 0;
     }
 
     public boolean isNullOrEmpty() {
@@ -145,11 +158,14 @@ public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> 
 
     public void addItem(ToonsContainer container) {
         mData.add(container);
+        mDataVanilla.add(container);
         notifyItemInserted(mData.size()-1);
     }
     public void addItems(ToonsContainer[] containers) {
         int startIndex = mData.size();
-        mData.addAll(Arrays.asList(containers.clone()));
+        List<ToonsContainer> list = Arrays.asList(containers.clone());
+        mData.addAll(list);
+        mDataVanilla.addAll(list);
         notifyItemRangeInserted(startIndex, mData.size()-1);
     }
 
@@ -166,5 +182,20 @@ public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> 
             return true;
         }
         return false;
+    }
+
+    public void showHidden() {
+        mData.clear();
+        mData = null;
+        mData = new ArrayList<>(mDataVanilla);
+        notifyDataSetChanged();
+    }
+
+    public void hideHidden() {
+        for (int i = mData.size() - 1; i >= 0 ; --i) {
+            if(mData.get(i).hide)
+                mData.remove(i);
+        }
+        notifyDataSetChanged();
     }
 }
