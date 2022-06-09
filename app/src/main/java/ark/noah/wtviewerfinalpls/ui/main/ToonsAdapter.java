@@ -24,6 +24,7 @@ public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> 
     private SortManager sortManager;
 
     private boolean bResorted = true;
+    private boolean bHidden = true;
 
     class ViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
@@ -80,6 +81,15 @@ public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ToonsContainer toonsContainer = mData.get(position);
+
+        if(toonsContainer.hide) {
+            holder.itemView.setVisibility(View.GONE);
+            holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
+            return;
+        } else {
+            holder.itemView.setVisibility(View.VISIBLE);
+            holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        }
 
         Calendar calendar = Calendar.getInstance();
         Integer[] releaseWeekdays = toonsContainer.getAllReleaseDaysInArray();
@@ -166,5 +176,21 @@ public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> 
             return true;
         }
         return false;
+    }
+
+    public void hideHiddens() {
+        if(bHidden) return;
+        bHidden = true;
+        notifyDataSetChanged();
+    }
+
+    public void showHiddens() {
+        if(!bHidden) return;
+        bHidden = false;
+        notifyDataSetChanged();
+    }
+
+    public boolean isHiding() {
+        return bHidden;
     }
 }

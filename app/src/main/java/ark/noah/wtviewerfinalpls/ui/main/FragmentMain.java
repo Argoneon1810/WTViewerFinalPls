@@ -60,6 +60,52 @@ public class FragmentMain extends Fragment {
     private static final int ASCENDING = 0;
     private static final int DESCENDING = 1;
 
+    public interface ClickListener {
+        void onClick(View view, int position);
+
+        void onLongClick(View view, int position);
+    }
+
+    public static class RecyclerTouchListener implements RecyclerView.OnItemTouchListener {
+        private GestureDetector gestureDetector;
+        private ClickListener clickListener;
+
+        public RecyclerTouchListener(Context context, final RecyclerView recyclerView, final ClickListener clickListener) {
+            this.clickListener = clickListener;
+            gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+                    return true;
+                }
+
+                @Override
+                public void onLongPress(MotionEvent e) {
+                    View child = recyclerView.findChildViewUnder(e.getX(), e.getY());
+                    if (child != null && clickListener != null) {
+                        clickListener.onLongClick(child, recyclerView.getChildAdapterPosition(child));
+                    }
+                }
+            });
+        }
+
+        @Override
+        public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+            View child = rv.findChildViewUnder(e.getX(), e.getY());
+            if (child != null && clickListener != null && gestureDetector.onTouchEvent(e)) {
+                clickListener.onClick(child, rv.getChildAdapterPosition(child));
+            }
+            return false;
+        }
+
+        @Override
+        public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+        }
+
+        @Override
+        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+        }
+    }
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel =
@@ -134,18 +180,13 @@ public class FragmentMain extends Fragment {
             m.setOptionalIconsVisible(true);
             for (int i = 0; i < menu.size(); ++i) {
                 menu.getItem(i).setIconTintBlendMode(BlendMode.SRC_ATOP);
-
-                SpannableString spannableString = new SpannableString(menu.getItem(i).getTitle());
-                spannableString.setSpan(new ForegroundColorSpan(blackColorFilter.getColor()), 0, spannableString.length(), 0);
-                menu.getItem(i).setTitle(spannableString);
+                applyThemeToMenuItem(menu.getItem(i));
 
                 Menu subMenu = menu.getItem(i).getSubMenu();
+                if(subMenu == null) continue;
                 for(int j = 0; j < subMenu.size(); ++j) {
                     subMenu.getItem(j).setIconTintBlendMode(BlendMode.SRC_ATOP);
-
-                    SpannableString spannableString2 = new SpannableString(subMenu.getItem(j).getTitle());
-                    spannableString2.setSpan(new ForegroundColorSpan(blackColorFilter.getColor()), 0, spannableString2.length(), 0);
-                    subMenu.getItem(j).setTitle(spannableString2);
+                    applyThemeToMenuItem(subMenu.getItem(j));
                 }
             }
         }
@@ -186,7 +227,10 @@ public class FragmentMain extends Fragment {
 
         ToonsAdapter.SortManager sortManager = adapter.getSortManager();
 
-        if(menuItem.getItemId() == R.id.action_sort_alphabet) {
+        if(menuItem.getItemId() == R.id.action_showhide) {
+            showHideHidden(adapter, menuItem);
+            return true;
+        } else if(menuItem.getItemId() == R.id.action_sort_alphabet) {
             sortByAlphabet(adapter, sortManager);
             return true;
         } else if(menuItem.getItemId() == R.id.action_sort_release) {
@@ -197,52 +241,6 @@ public class FragmentMain extends Fragment {
             return true;
         } else {
             return super.onOptionsItemSelected(menuItem);
-        }
-    }
-
-    public interface ClickListener {
-        void onClick(View view, int position);
-
-        void onLongClick(View view, int position);
-    }
-
-    public static class RecyclerTouchListener implements RecyclerView.OnItemTouchListener {
-        private GestureDetector gestureDetector;
-        private ClickListener clickListener;
-
-        public RecyclerTouchListener(Context context, final RecyclerView recyclerView, final ClickListener clickListener) {
-            this.clickListener = clickListener;
-            gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
-                @Override
-                public boolean onSingleTapUp(MotionEvent e) {
-                    return true;
-                }
-
-                @Override
-                public void onLongPress(MotionEvent e) {
-                    View child = recyclerView.findChildViewUnder(e.getX(), e.getY());
-                    if (child != null && clickListener != null) {
-                        clickListener.onLongClick(child, recyclerView.getChildAdapterPosition(child));
-                    }
-                }
-            });
-        }
-
-        @Override
-        public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-            View child = rv.findChildViewUnder(e.getX(), e.getY());
-            if (child != null && clickListener != null && gestureDetector.onTouchEvent(e)) {
-                clickListener.onClick(child, rv.getChildAdapterPosition(child));
-            }
-            return false;
-        }
-
-        @Override
-        public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-        }
-
-        @Override
-        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
         }
     }
 
@@ -307,8 +305,6 @@ public class FragmentMain extends Fragment {
     }
     private void sortByFIFO(ToonsAdapter adapter, ToonsAdapter.SortManager sortManager) {
         boolean isFIFO = sortManager.isSortedByFIFO();
-        Log.i("", "dir value in sharedpref before setting: " + sharedPreferences.getInt(getString(R.string.shared_pref_sort_direction_key), -1));
-        Log.i("", "type value in sharedpref before setting: " + sharedPreferences.getString(getString(R.string.shared_pref_sort_type_key), "failed"));
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(getString(R.string.shared_pref_sort_type_key), getString(R.string.action_sort_fifo));
         if (isFIFO && sortManager.isAscending()) {
@@ -322,8 +318,19 @@ public class FragmentMain extends Fragment {
             adapter.sortData(Comparator.comparing(t -> t.dbID));
         }
         editor.apply();
-        Log.i("", "dir value in sharedpref after setting: " + sharedPreferences.getInt(getString(R.string.shared_pref_sort_direction_key), -1));
-        Log.i("", "type value in sharedpref after setting: " + sharedPreferences.getString(getString(R.string.shared_pref_sort_type_key), "failed"));
+    }
+
+    private void showHideHidden(ToonsAdapter adapter, MenuItem menuItem) {
+        if(adapter.isHiding()) {
+            adapter.showHiddens();
+            menuItem.setTitle(requireContext().getString(R.string.action_hide_hidden));
+            applyThemeToMenuItem(menuItem);
+        }
+        else {
+            adapter.hideHiddens();
+            menuItem.setTitle(requireContext().getString(R.string.action_show_hidden));
+            applyThemeToMenuItem(menuItem);
+        }
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -367,6 +374,18 @@ public class FragmentMain extends Fragment {
                 PopupMenu popupMenu = new PopupMenu(requireContext(), view, Gravity.END);
 
                 popupMenu.getMenuInflater().inflate(R.menu.main_popup, popupMenu.getMenu());
+
+                Menu menu = popupMenu.getMenu();
+                for (int i = 0; i < menu.size(); ++i) {
+                    if(menu.getItem(i).getItemId() == R.id.action_showhidepopup) {
+                        if(adapter.getItemAtPosition(position).hide)
+                            menu.getItem(i).setTitle(R.string.action_set_show);
+                        else
+                            menu.getItem(i).setTitle(R.string.action_set_hide);
+                        break;
+                    }
+                }
+
                 popupMenu.setOnMenuItemClickListener(menuItem -> {
                     ToonsContainer currentItem = mList.get(position);
                     if(menuItem.getTitle().equals(requireContext().getText(R.string.menu_delete))) {
@@ -375,6 +394,13 @@ public class FragmentMain extends Fragment {
                         FragmentMainDirections.ActionNavMainToFragmentEdit action =
                                 FragmentMainDirections.actionNavMainToFragmentEdit(adapter.getItemAtPosition(position));
                         Navigation.findNavController(view).navigate(action);
+                    } else if (menuItem.getTitle().equals(requireContext().getText(R.string.action_set_hide))) {
+                        adapter.getItemAtPosition(position).hide = true;
+                        dbHelper.editToonContent(adapter.getItemAtPosition(position));
+                        if(adapter.isHiding()) adapter.notifyItemRemoved(position);
+                    } else if (menuItem.getTitle().equals(requireContext().getText(R.string.action_set_show))) {
+                        adapter.getItemAtPosition(position).hide = false;
+                        dbHelper.editToonContent(adapter.getItemAtPosition(position));
                     }
                     return false;
                 });
@@ -409,5 +435,11 @@ public class FragmentMain extends Fragment {
             sortManager.setSortType(ToonsAdapter.SortType.FIFO);
             sortByFIFO(adapter, sortManager, true);
         }
+    }
+
+    private void applyThemeToMenuItem(MenuItem menuItem) {
+        SpannableString spannableString = new SpannableString(menuItem.getTitle());
+        spannableString.setSpan(new ForegroundColorSpan(blackColorFilter.getColor()), 0, spannableString.length(), 0);
+        menuItem.setTitle(spannableString);
     }
 }

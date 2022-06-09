@@ -165,14 +165,15 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
     }
     public ArrayList<ToonsContainer> getmData() { return mData; }
 
-    public void addNewItem(String title, int releaseWeekday, int toonID, int episodeID, String toonType) {
+    public void addNewItem(String title, String toonType, int toonID, int episodeID, int releaseWeekday, boolean hide) {
         ToonsContainer container = new ToonsContainer(
                 -1,
                 title,
                 toonType,
                 toonID,
                 episodeID,
-                releaseWeekday
+                releaseWeekday,
+                hide
         );
         mData.add(container);
         notifyItemInserted(mData.size()-1);

@@ -3,4 +3,7 @@
 
     <item android:title="@string/menu_edit" />
     <item android:title="@string/menu_delete" />
+    <item
+        android:id="@+id/action_showhidepopup"
+        android:title="@string/action_set_hide" />
 </menu>

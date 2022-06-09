@@ -18,6 +18,7 @@ public class ToonsContainer implements Parcelable {
     public int dbID;
     public String toonName, toonType;
     public int toonID, episodeID, releaseWeekdays;
+    public boolean hide;
 
     public ToonsContainer(
         int dbID,
@@ -25,7 +26,8 @@ public class ToonsContainer implements Parcelable {
         String  toonType,
         int     toonID,
         int     episodeID,
-        int     releaseWeekdays
+        int     releaseWeekdays,
+        boolean hide
     ) {
         this.dbID = dbID;
         this.toonName = toonName;
@@ -33,6 +35,7 @@ public class ToonsContainer implements Parcelable {
         this.toonID = toonID;
         this.episodeID = episodeID;
         this.releaseWeekdays = releaseWeekdays;
+        this.hide = hide;
     }
 
     protected ToonsContainer(Parcel in) {
@@ -41,6 +44,7 @@ public class ToonsContainer implements Parcelable {
         toonID = in.readInt();
         episodeID = in.readInt();
         releaseWeekdays = in.readInt();
+        hide = in.readBoolean();
     }
 
     @Override
@@ -55,6 +59,7 @@ public class ToonsContainer implements Parcelable {
         dest.writeInt(toonID);
         dest.writeInt(episodeID);
         dest.writeInt(releaseWeekdays);
+        dest.writeBoolean(hide);
     }
 
     public static final Creator<ToonsContainer> CREATOR = new Creator<ToonsContainer>() {
