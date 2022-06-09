@@ -145,7 +145,7 @@ public class FragmentMain extends Fragment {
 
                     SpannableString spannableString2 = new SpannableString(subMenu.getItem(j).getTitle());
                     spannableString2.setSpan(new ForegroundColorSpan(blackColorFilter.getColor()), 0, spannableString2.length(), 0);
-                    subMenu.getItem(j).setTitle(spannableString);
+                    subMenu.getItem(j).setTitle(spannableString2);
                 }
             }
         }
