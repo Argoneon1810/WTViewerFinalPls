@@ -26,7 +26,7 @@ public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> 
     private SortManager sortManager;
 
     private boolean bResorted = true;
-    private boolean bHiding = false;
+    private boolean bHiding = true;
 
     class ViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
@@ -73,6 +73,11 @@ public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> 
     public ToonsAdapter(ArrayList<ToonsContainer> list) {
         mData = list;
         mDataVanilla = new ArrayList<>(list);
+        sortManager = new SortManager();
+    }
+    public ToonsAdapter(ArrayList<ToonsContainer> allItems, ArrayList<ToonsContainer> visibleOnly) {
+        mDataVanilla = allItems;
+        mData = visibleOnly;
         sortManager = new SortManager();
     }
 
@@ -211,11 +216,13 @@ public class ToonsAdapter extends RecyclerView.Adapter<ToonsAdapter.ViewHolder> 
         return bHiding;
     }
 
-    public void hideSingle(int index) {
-        mData.get(index).hide = true;
+    public ToonsContainer hideSingle(int index) {
+        ToonsContainer container = mData.get(index);
+        container.hide = true;
         if(bHiding) {
             mData.remove(index);
             notifyItemRemoved(index);
         }
+        return container;
     }
 }

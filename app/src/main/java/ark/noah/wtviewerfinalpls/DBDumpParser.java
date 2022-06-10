@@ -36,30 +36,43 @@ public class DBDumpParser {
         int release_index = value.indexOf(DBHelper.COL_RELEASEDAY);
         int hide_index = value.indexOf(DBHelper.COL_HIDE);
 
+        String title, type;
+        int toonid, epiid, release;
+        boolean hide;
+
         String titleSub = value.substring(title_index, type_index-1);
         titleSub = titleSub.substring(titleSub.indexOf("=")+1).trim();
-        String title = titleSub;
+        title = titleSub;
 
         String typeSub = value.substring(type_index, toonid_index-1);
         typeSub = typeSub.substring(typeSub.indexOf("=")+1).trim();
-        String type = typeSub;
+        type = typeSub;
 
         String toonidSub = value.substring(toonid_index, epiid_index-1);
         toonidSub = toonidSub.substring(toonidSub.indexOf("=")+1).trim();
-        int toonid = Integer.parseInt(toonidSub);
+        toonid = Integer.parseInt(toonidSub);
 
         String epiidSub = value.substring(epiid_index, release_index-1);
         epiidSub = epiidSub.substring(epiidSub.indexOf("=")+1).trim();
-        int epiid = Integer.parseInt(epiidSub);
+        epiid = Integer.parseInt(epiidSub);
 
-        String releaseSub = value.substring(release_index, hide_index-1);
-        releaseSub = releaseSub.substring(releaseSub.indexOf("=")+1).trim();
-        int release = Integer.parseInt(releaseSub);
+        if(hide_index == -1) {                                                  //compatibilty option (because the column 'hide' is added later.)
+            String releaseSub = value.substring(release_index);
+            releaseSub = releaseSub.substring(releaseSub.indexOf("=")+1).trim();
+            release = Integer.parseInt(releaseSub);
+        } else {
+            String releaseSub = value.substring(release_index, hide_index-1);
+            releaseSub = releaseSub.substring(releaseSub.indexOf("=")+1).trim();
+            release = Integer.parseInt(releaseSub);
+        }
 
-        String hideSub = value.substring(hide_index);
-        hideSub = hideSub.substring(hideSub.indexOf("=")+1).trim();
-        boolean hide = Integer.parseInt(hideSub) != 0;
-
+        if(hide_index == -1) {                                                  //compatibilty option (because the column 'hide' is added later.)
+            hide = false;
+        } else {
+            String hideSub = value.substring(hide_index);
+            hideSub = hideSub.substring(hideSub.indexOf("=") + 1).trim();
+            hide = Integer.parseInt(hideSub) != 0;
+        }
         return new ToonsContainer(-1, title, type, toonid, epiid, release, hide);
     }
 }

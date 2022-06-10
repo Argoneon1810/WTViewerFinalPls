@@ -56,8 +56,10 @@
     <string name="btn_add_this_page">Add This Page</string>
     <string name="btn_confirm">Confirm</string>
     <string name="btn_apply">Apply</string>
-    <string name="btn_backup">Back-up</string>
+    <string name="btn_backup">Backup</string>
     <string name="btn_restore">Restore</string>
+    <string name="btn_cleanup">Clean Up</string>
+    <string name="btn_cancel">Cancel</string>
 
     <string name="txt_url">Please type in a link of your desired toon.</string>
     <string name="txt_url_entry">Please type in a link of currently working link acquirer.</string>
@@ -83,4 +85,7 @@
     <string name="notif_invalid_entry_root">Received an invalid link acquirer. Setting it back to default.</string>
     <string name="notif_backup">DB is successfully dumped.</string>
     <string name="notif_restore">DB is successfully restored. All contents are added at the tail of the original list.</string>
+
+    <string name="warning_cleanup_1">By doing this your entire data of this app will be wiped.</string>
+    <string name="warning_cleanup_2">Are you sure to do this?</string>
 </resources>

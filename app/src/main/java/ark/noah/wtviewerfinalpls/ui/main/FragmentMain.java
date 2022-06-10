@@ -35,9 +35,12 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import ark.noah.wtviewerfinalpls.DBHelper;
 import ark.noah.wtviewerfinalpls.EntryPointGetter;
@@ -199,8 +202,6 @@ public class FragmentMain extends Fragment {
 
         ToonsAdapter.SortManager sortManager = adapter.getSortManager();
 
-        Log.wtf("", "onPrepareOptionsMenu: sortManager status: " + sortManager.toString());
-
         for (int i = 0; i < menu.size(); ++i) {
             Menu nestedMenu = menu.getItem(i).getSubMenu();
             if(nestedMenu == null) continue;
@@ -234,16 +235,20 @@ public class FragmentMain extends Fragment {
         if(menuItem.getItemId() == R.id.action_showhide) {
             showHideHidden(adapter, menuItem);
             return true;
-        } else if(menuItem.getItemId() == R.id.action_sort_alphabet) {
+        }
+        else if(menuItem.getItemId() == R.id.action_sort_alphabet) {
             sortByAlphabet(adapter, sortManager);
             return true;
-        } else if(menuItem.getItemId() == R.id.action_sort_release) {
+        }
+        else if(menuItem.getItemId() == R.id.action_sort_release) {
             sortByRelease(adapter, sortManager);
             return true;
-        } else if(menuItem.getItemId() == R.id.action_sort_fifo) {
+        }
+        else if(menuItem.getItemId() == R.id.action_sort_fifo) {
             sortByFIFO(adapter, sortManager);
             return true;
-        } else {
+        }
+        else {
             return super.onOptionsItemSelected(menuItem);
         }
     }
@@ -361,10 +366,12 @@ public class FragmentMain extends Fragment {
 
     private void prepareRecycler() {
         ArrayList<ToonsContainer> mList = dbHelper.getAllToons();
-        ToonsAdapter adapter = new ToonsAdapter(mList);
-        binding.recMain.setAdapter(adapter);
+        List<ToonsContainer> mListVisibleOnlyArray = mList.stream().filter(e -> !e.hide).collect(Collectors.toList());
+        ArrayList<ToonsContainer> mListVisibleOnly = (ArrayList<ToonsContainer>) mListVisibleOnlyArray;
 
-        showHideHidden(adapter, null);
+        ToonsAdapter adapter = new ToonsAdapter(mList, mListVisibleOnly);
+
+        binding.recMain.setAdapter(adapter);
 
         binding.recMain.addOnItemTouchListener(new RecyclerTouchListener(requireContext().getApplicationContext(), binding.recMain, new ClickListener() {
             @Override
@@ -403,8 +410,8 @@ public class FragmentMain extends Fragment {
                 popupMenu.setOnMenuItemClickListener(menuItem -> {
                     ToonsContainer currentItem = adapter.getmData().get(position);
                     if (menuItem.getTitle().equals(requireContext().getText(R.string.action_set_hide))) {
-                        adapter.hideSingle(position);
-                        dbHelper.editToonContent(adapter.getItemAtPosition(position));
+                        ToonsContainer item = adapter.hideSingle(position);
+                        dbHelper.editToonContent(item);
                     } else if (menuItem.getTitle().equals(requireContext().getText(R.string.action_set_show))) {
                         adapter.getItemAtPosition(position).hide = false;
                         dbHelper.editToonContent(adapter.getItemAtPosition(position));

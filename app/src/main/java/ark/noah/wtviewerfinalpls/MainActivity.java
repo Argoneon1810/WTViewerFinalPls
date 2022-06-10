@@ -26,6 +26,8 @@ public class MainActivity extends AppCompatActivity implements EntryPointGetter.
 
     SharedPreferences sharedPreferences;
 
+    DBHelper dbHelper;
+
     public interface BackPressEvent {
         boolean onBackPressedExtra();
     }
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements EntryPointGetter.
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.appBarMain.toolbar);
+        dbHelper = new DBHelper(this);
 
         sharedPreferences = getSharedPreferences(getString(R.string.shared_pref_key), MODE_PRIVATE);
         String entryUrl = sharedPreferences.getString(getString(R.string.shared_pref_entry_key), EntryPointGetter.EntryPointParser.defaultEntryRoot);
@@ -156,5 +159,12 @@ public class MainActivity extends AppCompatActivity implements EntryPointGetter.
     @Override
     public void onValidLinkSet() {
         EntryPointGetter.requestEntryPointLink(null);
+    }
+
+    public void wipeAll() {
+        dbHelper.wipeToons();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.apply();
     }
 }

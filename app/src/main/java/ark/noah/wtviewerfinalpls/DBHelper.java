@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
 
+import ark.noah.wtviewerfinalpls.ui.main.ToonsAdapter;
 import ark.noah.wtviewerfinalpls.ui.main.ToonsContainer;
 
 public class DBHelper extends SQLiteOpenHelper {
@@ -229,5 +230,12 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
 
         return id;
+    }
+
+    public void wipeToons() {
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME_TOONS);
+        db.execSQL(createQueryToons);
+        db.close();
     }
 }
